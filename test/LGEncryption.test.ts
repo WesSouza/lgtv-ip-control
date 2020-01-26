@@ -1,0 +1,41 @@
+import { mocked } from 'ts-jest/utils';
+import { LGEncryption } from '../src/classes/LGEncryption';
+import { DefaultSettings } from '../src/constants/DefaultSettings';
+
+describe('LGEncryption', () => {
+  it('constructs with valid parameters', () => {
+    const encryption = new LGEncryption('1234ABCD', DefaultSettings);
+    expect(encryption).toBeTruthy();
+  });
+
+  it('throws if keycode has wrong length', () => {
+    expect(() => {
+      new LGEncryption('123');
+    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+  });
+
+  it('throws if keycode has lowercase characters', () => {
+    expect(() => {
+      new LGEncryption('1234abcd');
+    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+  });
+});
+
+describe('encrypt', () => {
+  it('works with data from the LG document', () => {
+    jest.spyOn(Math, 'random').mockImplementation(() => 0);
+
+    const exampleKeyCode = '12345678';
+    const exampleCommand = 'VOLUME_MUTE on';
+    const expectedEncryptedIv = 'd2b21ca0ad6486cb2056a8b815033508';
+    const expectedEncryptedData = 'dfe77a7de05603a59ed5316ec552fac1';
+
+    const encryption = new LGEncryption(exampleKeyCode);
+    const encryptedData = encryption.encrypt(exampleCommand).toString('hex');
+    expect(encryptedData).toEqual(
+      `${expectedEncryptedIv}${expectedEncryptedData}`
+    );
+
+    mocked(Math.random).mockRestore();
+  });
+});
