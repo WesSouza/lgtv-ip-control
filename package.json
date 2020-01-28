@@ -20,7 +20,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@types/jest": "^24.9.1",
+    "@types/jest": "^25.1.0",
     "ts-jest": "^25.0.0",
     "tsdx": "^0.12.3",
     "tslib": "^1.10.0",
