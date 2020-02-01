@@ -1,10 +1,10 @@
 {
   "name": "lgtv-ip-control",
   "description": "IP Control module for 2018+ LG TVs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Wes Souza <hey@wes.dev> (https://wes.dev/)",
   "license": "MIT",
-  "repository": "WesSouza/import-sort-style-wes",
+  "repository": "WesSouza/lgtv-ip-control",
   "main": "dist/index.js",
   "module": "dist/lgtv-ip-control.esm.js",
   "typings": "dist/index.d.ts",
