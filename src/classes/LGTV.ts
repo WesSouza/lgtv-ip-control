@@ -22,7 +22,8 @@ export class LGTV {
 
   private async sendCommand(command: string) {
     const encryptedData = this.encryption.encrypt(command);
-    await this.socket.sendReceive(encryptedData);
+    const encryptedResponse = await this.socket.sendReceive(encryptedData);
+    return this.encryption.decrypt(encryptedResponse);
   }
 
   async connect() {
@@ -33,8 +34,28 @@ export class LGTV {
     await this.socket.disconnect();
   }
 
+  async getCurrentApp() {
+    return await this.sendCommand('CURRENT_APP');
+  }
+
+  async getCurrentVolume() {
+    return await this.sendCommand('CURRENT_VOL');
+  }
+
+  async getIpControlState() {
+    return await this.sendCommand('GET_IPCONTROL_STATE');
+  }
+
+  async getMacAddress(type: 'wired' | 'wifi') {
+    return await this.sendCommand(`GET_MACADDRESS ${type}`);
+  }
+
+  async getMuteState() {
+    return await this.sendCommand('MUTE_STATE');
+  }
+
   async powerOff() {
-    await this.sendCommand(`POWER off`);
+    return await this.sendCommand(`POWER off`);
   }
 
   powerOn() {
@@ -46,7 +67,7 @@ export class LGTV {
       Object.values(Keys).some(availableKey => availableKey === key),
       'key must be valid'
     );
-    await this.sendCommand(`KEY_ACTION ${key}`);
+    return await this.sendCommand(`KEY_ACTION ${key}`);
   }
 
   async setEnergySaving(level: EnergySavingLevels) {
@@ -56,7 +77,7 @@ export class LGTV {
       ),
       'level must be valid'
     );
-    await this.sendCommand(`ENERGY_SAVING ${level}`);
+    return await this.sendCommand(`ENERGY_SAVING ${level}`);
   }
 
   async setInput(input: Inputs) {
@@ -64,7 +85,7 @@ export class LGTV {
       Object.values(Inputs).some(availableInput => availableInput === input),
       'input must be valid'
     );
-    await this.sendCommand(`INPUT_SELECT ${input}`);
+    return await this.sendCommand(`INPUT_SELECT ${input}`);
   }
 
   async setVolume(volumeLevel: number) {
@@ -75,11 +96,11 @@ export class LGTV {
         volumeLevel <= 100,
       'volumeLevel must be an integer between 0 and 100'
     );
-    await this.sendCommand(`VOLUME_CONTROL ${volumeLevel}`);
+    return await this.sendCommand(`VOLUME_CONTROL ${volumeLevel}`);
   }
 
   async setVolumeMute(isMuted: boolean) {
     assert(typeof isMuted === 'boolean', 'isMuted must be a boolean');
-    await this.sendCommand(`VOLUME_MUTE ${isMuted ? 'on' : 'off'}`);
+    return await this.sendCommand(`VOLUME_MUTE ${isMuted ? 'on' : 'off'}`);
   }
 }
