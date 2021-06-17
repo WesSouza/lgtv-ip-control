@@ -20,7 +20,9 @@
   },
   "peerDependencies": {},
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.12.0",
     "@types/jest": "^26.0.23",
+    "size-limit": "^4.12.0",
     "ts-jest": "^27.0.3",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.0",
@@ -53,5 +55,15 @@
     "semi": true,
     "singleQuote": true,
     "trailingComma": "es5"
-  }
+  },
+  "size-limit": [
+    {
+      "path": "dist/immer-state.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/immer-state.esm.js",
+      "limit": "10 KB"
+    }
+  ]
 }
