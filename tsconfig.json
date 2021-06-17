@@ -4,6 +4,7 @@
     "baseUrl": "./",
     "declaration": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": [
       "dom",
@@ -11,6 +12,7 @@
     ],
     "module": "esnext",
     "moduleResolution": "node",
+    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -19,6 +21,7 @@
     "noUnusedParameters": true,
     "rootDir": "./src",
     "sourceMap": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
