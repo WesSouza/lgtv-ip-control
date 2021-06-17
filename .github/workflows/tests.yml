@@ -3,10 +3,10 @@ name: Install, lint, test and build
 on:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
