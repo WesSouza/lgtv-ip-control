@@ -33,7 +33,7 @@ yarn add lgtv-ip-control
 Before anything, you need to enable Network IP Control, which is very easy:
 
 1. Open the "All Settings" menu on the TV
-2. Using the remote arrows, navigate to "Connection"
+2. Using the remote arrows, navigate to "Connection". For some TVs, this may say "Network" instead.
 3. Quickly, press `82888` using the remote numeric buttons
 4. Note the MAC IP addresses for reference and library configuration
 5. Turn "Network IP Control" on
