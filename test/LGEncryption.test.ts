@@ -39,3 +39,21 @@ describe('encrypt', () => {
     mocked(Math.random).mockRestore();
   });
 });
+
+describe('decrypt', () => {
+  it('works with data from the LG document', () => {
+    const exampleKeyCode = '12345678';
+    const encryptedIv = 'd2b21ca0ad6486cb2056a8b815033508';
+    const encryptedData = 'dfe77a7de05603a59ed5316ec552fac1';
+    const exampleCipherText = Buffer.from(
+      `${encryptedIv}${encryptedData}`,
+      'hex'
+    );
+    const expectedPlainText = 'VOLUME_MUTE on\x0d\x01';
+
+    const encryption = new LGEncryption(exampleKeyCode);
+    const decryptedData = encryption.decrypt(exampleCipherText);
+
+    expect(decryptedData).toEqual(expectedPlainText);
+  });
+});

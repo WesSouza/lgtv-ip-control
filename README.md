@@ -10,9 +10,6 @@ since 2018. It utilizes encryption rules based on a guide found on the internet.
 This is not provided by LG, and it is not a complete implementation for every TV
 model.
 
-_Note: I wasn't able to implement deciphering of the messages sent back from the
-TV, so all commands are "send only"._
-
 **Requirements**
 
 - LG TV (tested on model OLED65B9PUA)
@@ -108,6 +105,46 @@ Disconnects from the TV. Returns a promise.
 
 ```ts
 await lgtv.disconnect();
+```
+
+### `.getCurrentApp()`
+
+Gets the current app. Returns a promise.
+
+```ts
+const currentApp = await lgtv.getCurrentApp();
+```
+
+### `.getCurrentVolume()`
+
+Gets the current volume. Returns a promise.
+
+```ts
+const currentVolume = await lgtv.getCurrentVolume();
+```
+
+### `.getIpControlState()`
+
+Gets the ip control state. Returns a promise.
+
+```ts
+const ipControlState = await lgtv.getIpControlState();
+```
+
+### `.getMacAddress(type: 'wired' | 'wifi')`
+
+Gets the mac address by type. Returns a promise.
+
+```ts
+const macAddress = await lgtv.getMacAddress('wired');
+```
+
+### `.getMuteState()`
+
+Gets the mute state. Returns a promise.
+
+```ts
+const muteState = await lgtv.getMuteState();
 ```
 
 ### `.powerOff()`

@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { createCipheriv, pbkdf2Sync } from 'crypto';
+import { createCipheriv, createDecipheriv, pbkdf2Sync } from 'crypto';
 import { DefaultSettings } from '../constants/DefaultSettings';
 
 export interface EncryptionSettings {
@@ -136,5 +136,23 @@ export class LGEncryption {
     const dataEnc = cbcCypher.update(preparedMessage, 'utf8');
 
     return Buffer.concat([ivEnc, dataEnc]);
+  }
+
+  decrypt(cipher: Buffer) {
+    const ecbDecypher = createDecipheriv(
+      'aes-128-ecb',
+      this.derivedKey,
+      Buffer.alloc(0)
+    );
+    ecbDecypher.setAutoPadding(false);
+    const iv = ecbDecypher.update(
+      cipher.slice(0, this.settings.encryptionKeyLength)
+    );
+
+    const cbcDecypher = createDecipheriv('aes-128-cbc', this.derivedKey, iv);
+    cbcDecypher.setAutoPadding(false);
+    return cbcDecypher
+      .update(cipher.slice(this.settings.encryptionKeyLength))
+      .toString();
   }
 }
