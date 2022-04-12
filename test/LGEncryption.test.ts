@@ -1,4 +1,3 @@
-import { mocked } from 'ts-jest/utils';
 import { LGEncryption } from '../src/classes/LGEncryption';
 import { DefaultSettings } from '../src/constants/DefaultSettings';
 
@@ -36,7 +35,7 @@ describe('encrypt', () => {
       `${expectedEncryptedIv}${expectedEncryptedData}`
     );
 
-    mocked(Math.random).mockRestore();
+    jest.mocked(Math.random).mockRestore();
   });
 });
 
