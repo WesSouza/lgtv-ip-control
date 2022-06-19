@@ -80,4 +80,8 @@ export enum Apps {
   music = 'com.webos.app.music',
   guide = 'com.webos.service.iepg',
   browser = 'com.webos.app.browser',
+  gallery = 'com.webos.app.igallery',
+  plex = 'cdp-30',
+  disney = 'com.disney.disneyplus-prod',
+  hbomax = 'com.hbo.hbomax',
 }
