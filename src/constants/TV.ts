@@ -66,3 +66,18 @@ export enum Keys {
   volumeUp = 'volumeup',
   yellowButton = 'yellowbutton',
 }
+
+export enum Apps {
+  amazon = 'amazon',
+  googlePlay = 'googleplaymovieswebos',
+  hulu = 'hulu',
+  netflix = 'netflix',
+  slingTV = 'com.movenetworks.app.sling-tv-sling-production',
+  youtube = 'youtube.leanback.v4',
+  vudu = 'vudu',
+  settings = 'com.palm.app.settings',
+  photos = 'com.webos.app.photovideo',
+  music = 'com.webos.app.music',
+  guide = 'com.webos.service.iepg',
+  browser = 'com.webos.app.browser',
+}
