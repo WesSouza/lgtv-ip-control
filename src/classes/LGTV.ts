@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { EnergySavingLevels, Inputs, Keys, Apps } from '../constants/TV';
+import { Apps, EnergySavingLevels, Inputs, Keys, PictureModes } from '../constants/TV';
 import { DefaultSettings } from '../constants/DefaultSettings';
 import { LGEncryption } from './LGEncryption';
 import { TinySocket } from './TinySocket';
@@ -62,16 +62,7 @@ export class LGTV {
     return await this.sendCommand(`APP_LAUNCH ${name}`);
   }
 
-  async setPictureMode(
-    mode:
-      | 'vivid'
-      | 'eco'
-      | 'normal'
-      | 'game'
-      | 'cinema'
-      | 'sports'
-      | 'filmMaker'
-  ) {
+  async setPictureMode(mode: PictureModes) {
     return await this.sendCommand(`PICTURE_MODE ${mode}`);
   }
 

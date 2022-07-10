@@ -1,3 +1,22 @@
+export enum Apps {
+  amazon = 'amazon',
+  googlePlay = 'googleplaymovieswebos',
+  hulu = 'hulu',
+  netflix = 'netflix',
+  slingTV = 'com.movenetworks.app.sling-tv-sling-production',
+  youtube = 'youtube.leanback.v4',
+  vudu = 'vudu',
+  settings = 'com.palm.app.settings',
+  photos = 'com.webos.app.photovideo',
+  music = 'com.webos.app.music',
+  guide = 'com.webos.service.iepg',
+  browser = 'com.webos.app.browser',
+  gallery = 'com.webos.app.igallery',
+  plex = 'cdp-30',
+  disney = 'com.disney.disneyplus-prod',
+  hbomax = 'com.hbo.hbomax',
+}
+
 export enum EnergySavingLevels {
   auto = 'auto',
   screenOff = 'screenoff',
@@ -67,21 +86,12 @@ export enum Keys {
   yellowButton = 'yellowbutton',
 }
 
-export enum Apps {
-  amazon = 'amazon',
-  googlePlay = 'googleplaymovieswebos',
-  hulu = 'hulu',
-  netflix = 'netflix',
-  slingTV = 'com.movenetworks.app.sling-tv-sling-production',
-  youtube = 'youtube.leanback.v4',
-  vudu = 'vudu',
-  settings = 'com.palm.app.settings',
-  photos = 'com.webos.app.photovideo',
-  music = 'com.webos.app.music',
-  guide = 'com.webos.service.iepg',
-  browser = 'com.webos.app.browser',
-  gallery = 'com.webos.app.igallery',
-  plex = 'cdp-30',
-  disney = 'com.disney.disneyplus-prod',
-  hbomax = 'com.hbo.hbomax',
+export enum PictureModes {
+  cinema = 'cinema',
+  eco = 'eco',
+  filmMaker = 'filmMaker',
+  game = 'game',
+  normal = 'normal',
+  sports = 'sports',
+  vivid = 'vivid',
 }
