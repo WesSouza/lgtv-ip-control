@@ -32,7 +32,7 @@ describe('encrypt', () => {
     const encryption = new LGEncryption(exampleKeyCode);
     const encryptedData = encryption.encrypt(exampleCommand).toString('hex');
     expect(encryptedData).toEqual(
-      `${expectedEncryptedIv}${expectedEncryptedData}`
+      `${expectedEncryptedIv}${expectedEncryptedData}`,
     );
 
     jest.mocked(Math.random).mockRestore();
@@ -46,7 +46,7 @@ describe('decrypt', () => {
     const encryptedData = 'dfe77a7de05603a59ed5316ec552fac1';
     const exampleCipherText = Buffer.from(
       `${encryptedIv}${encryptedData}`,
-      'hex'
+      'hex',
     );
     const expectedPlainText = 'VOLUME_MUTE on\x0d\x01';
 

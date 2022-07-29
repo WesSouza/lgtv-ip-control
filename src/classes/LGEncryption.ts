@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { createCipheriv, createDecipheriv, pbkdf2Sync } from 'crypto';
+
 import { DefaultSettings } from '../constants/DefaultSettings';
 
 export interface EncryptionSettings {
@@ -16,7 +17,7 @@ export interface EncryptionSettings {
 function assertSettings(settings: EncryptionSettings) {
   assert(
     typeof settings === 'object' && settings !== null,
-    'settings must be an object'
+    'settings must be an object',
   );
 
   const {
@@ -31,36 +32,36 @@ function assertSettings(settings: EncryptionSettings) {
   } = settings;
   assert(
     typeof encryptionIvLength === 'number' && encryptionIvLength > 0,
-    'settings.encryptionIvLength must be a number greater than 0'
+    'settings.encryptionIvLength must be a number greater than 0',
   );
   assert(
     typeof encryptionKeyDigest === 'string' && encryptionKeyDigest.length > 0,
-    'settings.encryptionKeyDigest must be a string with length greater than 0'
+    'settings.encryptionKeyDigest must be a string with length greater than 0',
   );
   assert(
     typeof encryptionKeyIterations === 'number' && encryptionKeyIterations > 0,
-    'settings.encryptionKLeyIterations must be a number greater than 0'
+    'settings.encryptionKLeyIterations must be a number greater than 0',
   );
   assert(
     typeof encryptionKeyLength === 'number' && encryptionKeyLength > 0,
-    'settings.encryptionKeyLength must be a number greater than 0'
+    'settings.encryptionKeyLength must be a number greater than 0',
   );
   assert(
     Array.isArray(encryptionKeySalt) &&
-      encryptionKeySalt.some(data => typeof data === 'number' && data > 0),
-    'settings.encryptionKeySalt must be an array of numbers with length greater than 0'
+      encryptionKeySalt.some((data) => typeof data === 'number' && data > 0),
+    'settings.encryptionKeySalt must be an array of numbers with length greater than 0',
   );
   assert(
     keycodeFormat instanceof RegExp,
-    'settings.keycodeFormat must be an instance of RegExp'
+    'settings.keycodeFormat must be an instance of RegExp',
   );
   assert(
     typeof messageBlockSize === 'number' && messageBlockSize > 0,
-    'settings.messageBlockSize must be a number greater than 0'
+    'settings.messageBlockSize must be a number greater than 0',
   );
   assert(
     typeof messageTerminator === 'string' && messageTerminator.length > 0,
-    'settings.messageTerminator must be a string with length greater than 0'
+    'settings.messageTerminator must be a string with length greater than 0',
   );
 }
 
@@ -74,7 +75,7 @@ function deriveKey(keycode: string, settings = DefaultSettings) {
     Buffer.from(settings.encryptionKeySalt),
     settings.encryptionKeyIterations,
     settings.encryptionKeyLength,
-    settings.encryptionKeyDigest
+    settings.encryptionKeyDigest,
   );
 }
 
@@ -104,7 +105,7 @@ export class LGEncryption {
     const { messageTerminator, messageBlockSize } = this.settings;
     assert(
       !message.includes(messageTerminator),
-      'message must not include the message terminator character'
+      'message must not include the message terminator character',
     );
 
     let newMessage = message + messageTerminator;
@@ -128,7 +129,7 @@ export class LGEncryption {
     const ecbCypher = createCipheriv(
       'aes-128-ecb',
       this.derivedKey,
-      Buffer.alloc(0)
+      Buffer.alloc(0),
     );
     const ivEnc = ecbCypher.update(iv);
 
@@ -142,11 +143,11 @@ export class LGEncryption {
     const ecbDecypher = createDecipheriv(
       'aes-128-ecb',
       this.derivedKey,
-      Buffer.alloc(0)
+      Buffer.alloc(0),
     );
     ecbDecypher.setAutoPadding(false);
     const iv = ecbDecypher.update(
-      cipher.slice(0, this.settings.encryptionKeyLength)
+      cipher.slice(0, this.settings.encryptionKeyLength),
     );
 
     const cbcDecypher = createDecipheriv('aes-128-cbc', this.derivedKey, iv);

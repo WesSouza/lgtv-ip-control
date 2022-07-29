@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { createSocket } from 'dgram';
 import { isIP, isIPv6, Socket } from 'net';
+
 import { DefaultSettings } from '../constants/DefaultSettings';
 
 export interface SocketSettings {
@@ -20,34 +21,30 @@ const WolSyncCount = 6;
 function assertSettings(settings: SocketSettings) {
   assert(
     typeof settings === 'object' && settings !== null,
-    'settings must be an object'
+    'settings must be an object',
   );
 
-  const {
-    networkPort,
-    networkTimeout,
-    networkWolAddress,
-    networkWolPort,
-  } = settings;
+  const { networkPort, networkTimeout, networkWolAddress, networkWolPort } =
+    settings;
   assert(
     typeof networkPort === 'number' && networkPort > 0,
-    'settings.networkPort must be a number greater than 0'
+    'settings.networkPort must be a number greater than 0',
   );
   assert(
     typeof networkTimeout === 'number' && networkTimeout > 0,
-    'settings.networkTimeout must be a number greater than 0'
+    'settings.networkTimeout must be a number greater than 0',
   );
   assert(
     typeof networkWolAddress === 'string' && networkWolAddress.length > 0,
-    'settings.networkWolAddress must be a string with length greater than 0'
+    'settings.networkWolAddress must be a string with length greater than 0',
   );
   assert(
     isIP(networkWolAddress),
-    'settings.networkWolAddress must be a valid IPv4 or IPv6'
+    'settings.networkWolAddress must be a valid IPv4 or IPv6',
   );
   assert(
     typeof networkWolPort === 'number' && networkWolPort > 0,
-    'settings.networkWolPort must be a number greater than 0'
+    'settings.networkWolPort must be a number greater than 0',
   );
 }
 
@@ -59,17 +56,17 @@ export class TinySocket {
   constructor(
     private host: string,
     private macAddress: string | null,
-    private settings = DefaultSettings
+    private settings = DefaultSettings,
   ) {
     assertSettings(settings);
     assert(
       macAddress === null || MacAddressMatcher.test(macAddress),
-      'invalid mac address'
+      'invalid mac address',
     );
   }
 
   wrap<T>(
-    method: (callback: (error?: Error, value?: T) => void) => void
+    method: (callback: (error?: Error, value?: T) => void) => void,
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       const callback = (error?: Error, value?: T) => {
@@ -92,7 +89,7 @@ export class TinySocket {
   }
 
   connect(): Promise<void> {
-    return this.wrap(callback => {
+    return this.wrap((callback) => {
       this.client.connect(this.settings.networkPort, this.host, callback);
       this.client.setTimeout(this.settings.networkTimeout);
     });
@@ -103,15 +100,15 @@ export class TinySocket {
   }
 
   read(): Promise<Buffer> {
-    return this.wrap(callback => {
-      this.client.once('data', data => {
+    return this.wrap((callback) => {
+      this.client.once('data', (data) => {
         callback(undefined, data);
       });
     });
   }
 
   write(data: Buffer): Promise<void> {
-    return this.wrap(callback => {
+    return this.wrap((callback) => {
       this.client.write(data, callback);
     });
   }
@@ -122,7 +119,7 @@ export class TinySocket {
   }
 
   disconnect(): Promise<void> {
-    return this.wrap(callback => {
+    return this.wrap((callback) => {
       this.client.end(callback);
     });
   }
@@ -132,7 +129,7 @@ export class TinySocket {
       throw new Error('Unable to wake on lan: mac address was not configured');
     }
     const socket = createSocket(
-      isIPv6(this.settings.networkWolAddress) ? 'udp6' : 'udp4'
+      isIPv6(this.settings.networkWolAddress) ? 'udp6' : 'udp4',
     );
     socket.on('error', socket.close);
     socket.on('listening', () => {
@@ -141,11 +138,11 @@ export class TinySocket {
 
     const magicPacket = Buffer.alloc(
       WolSyncCount + MacAddressBlocksCount * WolMacAddressCount,
-      WolSyncByte
+      WolSyncByte,
     );
     const macAddressBlocks = this.macAddress
       .split(MacAddressBlockSeparator)
-      .map(string => parseInt(string, 16));
+      .map((string) => parseInt(string, 16));
     for (let i = 0; i < WolMacAddressCount; i++) {
       for (let j = 0; j < macAddressBlocks.length; j++) {
         const index = WolSyncCount + i * MacAddressBlocksCount + j;
@@ -161,7 +158,7 @@ export class TinySocket {
       this.settings.networkWolAddress,
       () => {
         socket.close();
-      }
+      },
     );
   }
 }

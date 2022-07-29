@@ -1,4 +1,6 @@
 import assert from 'assert';
+
+import { DefaultSettings } from '../constants/DefaultSettings';
 import {
   Apps,
   EnergySavingLevels,
@@ -6,7 +8,6 @@ import {
   Keys,
   PictureModes,
 } from '../constants/TV';
-import { DefaultSettings } from '../constants/DefaultSettings';
 import { LGEncryption } from './LGEncryption';
 import { TinySocket } from './TinySocket';
 
@@ -20,7 +21,7 @@ export class LGTV {
     host: string,
     macAddress: string | null,
     keycode: string,
-    settings = DefaultSettings
+    settings = DefaultSettings,
   ) {
     this.socket = new TinySocket(host, macAddress, settings);
     this.encryption = new LGEncryption(keycode, settings);
@@ -78,8 +79,8 @@ export class LGTV {
 
   async sendKey(key: Keys) {
     assert(
-      Object.values(Keys).some(availableKey => availableKey === key),
-      'key must be valid'
+      Object.values(Keys).some((availableKey) => availableKey === key),
+      'key must be valid',
     );
     return await this.sendCommand(`KEY_ACTION ${key}`);
   }
@@ -87,17 +88,17 @@ export class LGTV {
   async setEnergySaving(level: EnergySavingLevels) {
     assert(
       Object.values(EnergySavingLevels).some(
-        availableOption => availableOption === level
+        (availableOption) => availableOption === level,
       ),
-      'level must be valid'
+      'level must be valid',
     );
     return await this.sendCommand(`ENERGY_SAVING ${level}`);
   }
 
   async setInput(input: Inputs) {
     assert(
-      Object.values(Inputs).some(availableInput => availableInput === input),
-      'input must be valid'
+      Object.values(Inputs).some((availableInput) => availableInput === input),
+      'input must be valid',
     );
     return await this.sendCommand(`INPUT_SELECT ${input}`);
   }
@@ -108,7 +109,7 @@ export class LGTV {
         IntegerMatcher.test(volumeLevel.toString()) &&
         volumeLevel >= 0 &&
         volumeLevel <= 100,
-      'volumeLevel must be an integer between 0 and 100'
+      'volumeLevel must be an integer between 0 and 100',
     );
     return await this.sendCommand(`VOLUME_CONTROL ${volumeLevel}`);
   }
