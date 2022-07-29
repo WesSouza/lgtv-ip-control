@@ -58,7 +58,7 @@ export class LGTV {
     return await this.sendCommand(`POWER off`);
   }
 
-  async launchApp(name: Apps) {
+  async launchApp(name: Apps | string) {
     return await this.sendCommand(`APP_LAUNCH ${name}`);
   }
 
