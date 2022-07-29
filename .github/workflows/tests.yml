@@ -1,7 +1,7 @@
 name: Install, lint, test and build
 
 on:
-  - push
+  push:
 
 jobs:
   build:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['16.x', '17.x']
+        node: ['16.x', '18.x']
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
