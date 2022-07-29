@@ -80,7 +80,7 @@ export class TinySocket {
 
         if (error) {
           reject(error);
-        } else {
+        } else if (value !== undefined) {
           resolve(value);
         }
       };
