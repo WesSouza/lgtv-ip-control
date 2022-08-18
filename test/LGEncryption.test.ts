@@ -1,5 +1,7 @@
-import { LGEncryption } from '../src/classes/LGEncryption';
-import { DefaultSettings } from '../src/constants/DefaultSettings';
+import { describe, expect, it, vi } from 'vitest';
+
+import { LGEncryption } from '../src/classes/LGEncryption.js';
+import { DefaultSettings } from '../src/constants/DefaultSettings.js';
 
 describe('LGEncryption', () => {
   it('constructs with valid parameters', () => {
@@ -22,7 +24,7 @@ describe('LGEncryption', () => {
 
 describe('encrypt', () => {
   it('works with data from the LG document', () => {
-    jest.spyOn(Math, 'random').mockImplementation(() => 0);
+    vi.spyOn(Math, 'random').mockImplementation(() => 0);
 
     const exampleKeyCode = '12345678';
     const exampleCommand = 'VOLUME_MUTE on';
@@ -35,7 +37,7 @@ describe('encrypt', () => {
       `${expectedEncryptedIv}${expectedEncryptedData}`,
     );
 
-    jest.mocked(Math.random).mockRestore();
+    vi.mocked(Math.random).mockRestore();
   });
 });
 

@@ -1,15 +1,15 @@
 import assert from 'assert';
 
-import { DefaultSettings } from '../constants/DefaultSettings';
+import { DefaultSettings } from '../constants/DefaultSettings.js';
 import {
   Apps,
   EnergySavingLevels,
   Inputs,
   Keys,
   PictureModes,
-} from '../constants/TV';
-import { LGEncryption } from './LGEncryption';
-import { TinySocket } from './TinySocket';
+} from '../constants/TV.js';
+import { LGEncryption } from './LGEncryption.js';
+import { TinySocket } from './TinySocket.js';
 
 const IntegerMatcher = /^\d+$/;
 

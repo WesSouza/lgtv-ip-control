@@ -1,3 +1,3 @@
-export * from './classes/LGTV';
-export * from './constants/DefaultSettings';
-export * from './constants/TV';
+export * from './classes/LGTV.js';
+export * from './constants/DefaultSettings.js';
+export * from './constants/TV.js';
