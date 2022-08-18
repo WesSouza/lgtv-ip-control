@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { createCipheriv, createDecipheriv, pbkdf2Sync } from 'crypto';
 
-import { DefaultSettings } from '../constants/DefaultSettings';
+import { DefaultSettings } from '../constants/DefaultSettings.js';
 
 export interface EncryptionSettings {
   encryptionIvLength: number;

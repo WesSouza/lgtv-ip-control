@@ -2,7 +2,7 @@ import assert from 'assert';
 import { createSocket } from 'dgram';
 import { isIP, isIPv6, Socket } from 'net';
 
-import { DefaultSettings } from '../constants/DefaultSettings';
+import { DefaultSettings } from '../constants/DefaultSettings.js';
 
 export interface SocketSettings {
   networkPort: number;
