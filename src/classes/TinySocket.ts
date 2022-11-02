@@ -72,12 +72,18 @@ export class TinySocket {
     ) => void,
   ): Promise<T> {
     return new Promise((resolve, reject) => {
+      const handleTimeout = () => {
+        this.client.end();
+        reject(new TimeoutError());
+      };
       const cleanup = () => {
         this.client.removeListener('error', reject);
-        this.client.removeListener('timeout', () => {
-          reject(new TimeoutError());
-        });
+        this.client.removeListener('timeout', handleTimeout);
       };
+
+      this.client.once('error', reject);
+      this.client.once('timeout', handleTimeout);
+
       method(
         (value: T) => {
           cleanup();
@@ -88,9 +94,6 @@ export class TinySocket {
           reject(error);
         },
       );
-
-      this.client.once('error', reject);
-      this.client.once('timeout', reject);
     });
   }
 
@@ -99,10 +102,6 @@ export class TinySocket {
       this.client.setTimeout(this.settings.networkTimeout);
       this.client.connect(this.settings.networkPort, this.host, resolve);
     });
-  }
-
-  handleTimeout() {
-    this.client.end();
   }
 
   read(): Promise<Buffer> {
