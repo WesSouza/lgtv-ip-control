@@ -66,22 +66,28 @@ export class TinySocket {
   }
 
   wrap<T>(
-    method: (callback: (error?: Error, value?: T) => void) => void,
+    method: (
+      resolve: (value: T) => void,
+      reject: (error: Error) => void,
+    ) => void,
   ): Promise<T> {
     return new Promise((resolve, reject) => {
-      const callback = (error?: Error, value?: T) => {
+      const cleanup = () => {
         this.client.removeListener('error', reject);
         this.client.removeListener('timeout', () => {
           reject(new TimeoutError());
         });
-
-        if (error) {
-          reject(error);
-        } else if (value !== undefined) {
-          resolve(value);
-        }
       };
-      method(callback);
+      method(
+        (value: T) => {
+          cleanup();
+          resolve(value);
+        },
+        (error: Error) => {
+          cleanup();
+          reject(error);
+        },
+      );
 
       this.client.once('error', reject);
       this.client.once('timeout', reject);
@@ -89,9 +95,9 @@ export class TinySocket {
   }
 
   connect(): Promise<void> {
-    return this.wrap((callback) => {
-      this.client.connect(this.settings.networkPort, this.host, callback);
+    return this.wrap((resolve) => {
       this.client.setTimeout(this.settings.networkTimeout);
+      this.client.connect(this.settings.networkPort, this.host, resolve);
     });
   }
 
@@ -100,16 +106,20 @@ export class TinySocket {
   }
 
   read(): Promise<Buffer> {
-    return this.wrap((callback) => {
-      this.client.once('data', (data) => {
-        callback(undefined, data);
-      });
+    return this.wrap((resolve) => {
+      this.client.once('data', resolve);
     });
   }
 
   write(data: Buffer): Promise<void> {
-    return this.wrap((callback) => {
-      this.client.write(data, callback);
+    return this.wrap((resolve, reject) => {
+      this.client.write(data, (error?: Error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 
@@ -119,8 +129,8 @@ export class TinySocket {
   }
 
   disconnect(): Promise<void> {
-    return this.wrap((callback) => {
-      this.client.end(callback);
+    return this.wrap((resolve) => {
+      this.client.end(resolve);
     });
   }
 
