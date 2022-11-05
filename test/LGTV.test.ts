@@ -3,7 +3,7 @@ import { AddressInfo, Server } from 'net';
 import { promisify } from 'util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { LGEncryption } from '../src/classes/LGEncryption.js';
+import { LGEncoder, LGEncryption } from '../src/classes/LGEncryption.js';
 import { LGTV } from '../src/classes/LGTV.js';
 import { DefaultSettings } from '../src/constants/DefaultSettings.js';
 import {
@@ -35,10 +35,12 @@ describe('LGTV', () => {
 });
 
 describe.each([
-  { ipProto: 'IPv4', address: '127.0.0.1' },
-  { ipProto: 'IPv6', address: '::1' },
-])('streaming commands $ipProto', ({ address }) => {
-  let mockCrypt: LGEncryption;
+  { ipProto: 'IPv4', addr: '127.0.0.1', crypt: false, ctext: 'out' },
+  { ipProto: 'IPv4', addr: '127.0.0.1', crypt: true, ctext: '' },
+  { ipProto: 'IPv6', addr: '::1', crypt: false, ctext: 'out' },
+  { ipProto: 'IPv6', addr: '::1', crypt: true, ctext: '' },
+])('streaming commands $ipProto, with$ctext encryption', ({ addr, crypt }) => {
+  let mockEncode: LGEncoder;
   let mockServer: Server;
   let testSettings: typeof DefaultSettings;
   let testTV: LGTV;
@@ -47,8 +49,8 @@ describe.each([
     const mockedResponse = new Promise((resolve) => {
       mockServer.on('connection', (socket) => {
         socket.on('data', async (data) => {
-          expect(mockCrypt.decrypt(data)).toBe(request);
-          socket.write(mockCrypt.encrypt(response), resolve);
+          expect(mockEncode.decode(data)).toBe(request);
+          socket.write(mockEncode.encode(response), resolve);
         });
       });
     });
@@ -56,15 +58,23 @@ describe.each([
   }
 
   beforeEach(() => {
-    mockCrypt = new LGEncryption(CRYPT_KEY, {
-      ...DefaultSettings,
-      messageTerminator: '\n',
-      responseTerminator: '\r',
-    });
+    if (!crypt) {
+      mockEncode = new LGEncoder({
+        ...DefaultSettings,
+        messageTerminator: '\n',
+        responseTerminator: '\r',
+      });
+    } else {
+      mockEncode = new LGEncryption(CRYPT_KEY, {
+        ...DefaultSettings,
+        messageTerminator: '\n',
+        responseTerminator: '\r',
+      });
+    }
     mockServer = new Server().listen();
     const port = (<AddressInfo>mockServer.address()).port;
     testSettings = { ...DefaultSettings, networkPort: port };
-    testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
+    testTV = new LGTV(addr, MAC, crypt ? CRYPT_KEY : null, testSettings);
   });
 
   afterEach(async () => {
@@ -246,11 +256,11 @@ describe.each([
 describe.each([
   {
     ipProto: 'IPv4',
-    address: '127.0.0.1',
+    addr: '127.0.0.1',
     socketType: 'udp4' as SocketType,
   },
-  { ipProto: 'IPv6', address: '::1', socketType: 'udp6' as SocketType },
-])('datagram commands $ipProto', ({ address, socketType }) => {
+  { ipProto: 'IPv6', addr: '::1', socketType: 'udp6' as SocketType },
+])('datagram commands $ipProto', ({ addr, socketType }) => {
   let mockSocket: DgramSocket;
   let testSettings: typeof DefaultSettings;
   let testTV: LGTV;
@@ -262,9 +272,9 @@ describe.each([
     testSettings = {
       ...DefaultSettings,
       networkWolPort: port,
-      networkWolAddress: address,
+      networkWolAddress: addr,
     };
-    testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
+    testTV = new LGTV(addr, MAC, CRYPT_KEY, testSettings);
   });
 
   afterEach(async () => {
