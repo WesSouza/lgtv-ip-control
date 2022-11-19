@@ -57,7 +57,7 @@ describe.each([
 
   it('connects', async () => {
     let connected = false;
-    const mocking = new Promise((resolve) =>  {
+    const mocking = new Promise((resolve) => {
       mockServer.on('connection', () => {
         connected = true;
         resolve();
@@ -74,7 +74,7 @@ describe.each([
     let disconnected = false;
 
     await testTV.connect();
-    const mocking = new Promise((resolve) =>  {
+    const mocking = new Promise((resolve) => {
       mockSocket.on('end', () => {
         disconnected = true;
         resolve();
@@ -88,14 +88,11 @@ describe.each([
   it('gets the current app', async () => {
     let received = false;
     await testTV.connect();
-    const mocking = new Promise((resolve) =>  {
+    const mocking = new Promise((resolve) => {
       mockSocket.on('data', async (data) => {
         expect(stripPadding(mockCrypt.decrypt(data))).toBe('CURRENT_APP');
         received = true;
-        mockSocket.write(
-          mockCrypt.encrypt('APP:youtube.leanback.v4'),
-          resolve,
-        );
+        mockSocket.write(mockCrypt.encrypt('APP:youtube.leanback.v4'), resolve);
       });
     });
     const result = await testTV.getCurrentApp();
@@ -137,7 +134,7 @@ describe.each([
   it('powers on', async () => {
     let received = false;
     let contents = null;
-    const mocking = new Promise((resolve) =>  {
+    const mocking = new Promise((resolve) => {
       mockSocket.on('message', (msg) => {
         received = true;
         contents = msg;
