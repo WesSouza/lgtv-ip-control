@@ -57,7 +57,7 @@ describe.each([
 
   it('connects', async () => {
     let connected = false;
-    const mocking = new Promise((resolve) => {
+    const mocking = new Promise<void>((resolve) => {
       mockServer.on('connection', () => {
         connected = true;
         resolve();
@@ -74,7 +74,7 @@ describe.each([
     let disconnected = false;
 
     await testTV.connect();
-    const mocking = new Promise((resolve) => {
+    const mocking = new Promise<void>((resolve) => {
       mockSocket.on('end', () => {
         disconnected = true;
         resolve();
@@ -134,7 +134,7 @@ describe.each([
   it('powers on', async () => {
     let received = false;
     let contents = null;
-    const mocking = new Promise((resolve) => {
+    const mocking = new Promise<void>((resolve) => {
       mockSocket.on('message', (msg) => {
         received = true;
         contents = msg;
