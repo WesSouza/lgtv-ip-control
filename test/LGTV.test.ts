@@ -1,5 +1,5 @@
-import { createSocket } from 'dgram';
-import { Server } from 'net';
+import { createSocket, Socket as DgramSocket, SocketType } from 'dgram';
+import { AddressInfo, Server, Socket } from 'net';
 import { promisify } from 'util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -35,19 +35,19 @@ describe.each([
   { ipProto: 'IPv4', address: '127.0.0.1' },
   { ipProto: 'IPv6', address: '::1' },
 ])('streaming commands $ipProto', ({ address }) => {
-  let mockCrypt;
-  let mockServer;
-  let mockSocket;
-  let testSettings;
-  let testTV;
-  let doneMocking;
-  let finishMock;
+  let mockCrypt: LGEncryption;
+  let mockServer: Server;
+  let mockSocket: Socket;
+  let testSettings: typeof DefaultSettings;
+  let testTV: LGTV;
+  let doneMocking: Promise<void>;
+  let finishMock: () => void;
 
   beforeEach(() => {
     mockCrypt = new LGEncryption(CRYPT_KEY);
     mockServer = new Server((socket) => (mockSocket = socket));
     mockServer.listen();
-    const port = mockServer.address().port;
+    const port = (<AddressInfo>mockServer.address()).port;
     testSettings = { ...DefaultSettings, networkPort: port };
     testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
     doneMocking = new Promise((resolve) => (finishMock = resolve));
@@ -55,7 +55,6 @@ describe.each([
 
   afterEach(async () => {
     mockSocket?.destroy();
-    mockSocket = undefined;
     await promisify(mockServer.close).bind(mockServer)();
   });
 
@@ -105,14 +104,18 @@ describe.each([
 });
 
 describe.each([
-  { ipProto: 'IPv4', address: '127.0.0.1', socketType: 'udp4' },
-  { ipProto: 'IPv6', address: '::1', socketType: 'udp6' },
+  {
+    ipProto: 'IPv4',
+    address: '127.0.0.1',
+    socketType: 'udp4' as SocketType,
+  },
+  { ipProto: 'IPv6', address: '::1', socketType: 'udp6' as SocketType },
 ])('datagram commands $ipProto', ({ address, socketType }) => {
-  let mockSocket;
-  let testSettings;
-  let testTV;
-  let doneMocking;
-  let finishMock;
+  let mockSocket: DgramSocket;
+  let testSettings: typeof DefaultSettings;
+  let testTV: LGTV;
+  let doneMocking: Promise<void>;
+  let finishMock: () => void;
 
   beforeEach(async () => {
     mockSocket = createSocket(socketType);
