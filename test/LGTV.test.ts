@@ -40,8 +40,6 @@ describe.each([
   let mockSocket: Socket;
   let testSettings: typeof DefaultSettings;
   let testTV: LGTV;
-  let doneMocking: Promise<void>;
-  let finishMock: () => void;
 
   beforeEach(() => {
     mockCrypt = new LGEncryption(CRYPT_KEY);
@@ -50,7 +48,6 @@ describe.each([
     const port = (<AddressInfo>mockServer.address()).port;
     testSettings = { ...DefaultSettings, networkPort: port };
     testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
-    doneMocking = new Promise((resolve) => (finishMock = resolve));
   });
 
   afterEach(async () => {
@@ -60,13 +57,15 @@ describe.each([
 
   it('connects', async () => {
     let connected = false;
-    mockServer.on('connection', () => {
-      connected = true;
-      finishMock();
+    const mocking = new Promise((resolve) =>  {
+      mockServer.on('connection', () => {
+        connected = true;
+        resolve();
+      });
     });
 
     await testTV.connect();
-    await doneMocking;
+    await mocking;
     expect(connected).toBe(true);
     await testTV.disconnect();
   });
@@ -75,29 +74,33 @@ describe.each([
     let disconnected = false;
 
     await testTV.connect();
-    mockSocket.on('end', () => {
-      disconnected = true;
-      finishMock();
+    const mocking = new Promise((resolve) =>  {
+      mockSocket.on('end', () => {
+        disconnected = true;
+        resolve();
+      });
     });
     await testTV.disconnect();
-    await doneMocking;
+    await mocking;
     expect(disconnected).toBe(true);
   });
 
   it('gets the current app', async () => {
     let received = false;
     await testTV.connect();
-    mockSocket.on('data', async (data) => {
-      expect(stripPadding(mockCrypt.decrypt(data))).toBe('CURRENT_APP');
-      received = true;
-      mockSocket.write(
-        mockCrypt.encrypt('APP:youtube.leanback.v4'),
-        finishMock,
-      );
+    const mocking = new Promise((resolve) =>  {
+      mockSocket.on('data', async (data) => {
+        expect(stripPadding(mockCrypt.decrypt(data))).toBe('CURRENT_APP');
+        received = true;
+        mockSocket.write(
+          mockCrypt.encrypt('APP:youtube.leanback.v4'),
+          resolve,
+        );
+      });
     });
     const result = await testTV.getCurrentApp();
     await testTV.disconnect();
-    await doneMocking;
+    await mocking;
     expect(received).toBe(true);
     expect(stripPadding(result)).toBe('APP:youtube.leanback.v4');
   });
@@ -114,8 +117,6 @@ describe.each([
   let mockSocket: DgramSocket;
   let testSettings: typeof DefaultSettings;
   let testTV: LGTV;
-  let doneMocking: Promise<void>;
-  let finishMock: () => void;
 
   beforeEach(async () => {
     mockSocket = createSocket(socketType);
@@ -127,7 +128,6 @@ describe.each([
       networkWolAddress: address,
     };
     testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
-    doneMocking = new Promise((resolve) => (finishMock = resolve));
   });
 
   afterEach(async () => {
@@ -137,13 +137,15 @@ describe.each([
   it('powers on', async () => {
     let received = false;
     let contents = null;
-    mockSocket.on('message', (msg) => {
-      received = true;
-      contents = msg;
-      finishMock();
+    const mocking = new Promise((resolve) =>  {
+      mockSocket.on('message', (msg) => {
+        received = true;
+        contents = msg;
+        resolve();
+      });
     });
     testTV.powerOn();
-    await doneMocking;
+    await mocking;
     expect(received).toBe(true);
     expect(contents).toStrictEqual(
       Buffer.from([
