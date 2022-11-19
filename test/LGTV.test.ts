@@ -47,7 +47,7 @@ describe.each([
     mockCrypt = new LGEncryption(CRYPT_KEY);
     mockServer = new Server((socket) => (mockSocket = socket));
     mockServer.listen();
-    let port = mockServer.address().port;
+    const port = mockServer.address().port;
     testSettings = { ...DefaultSettings, networkPort: port };
     testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
     doneMocking = new Promise((resolve) => (finishMock = resolve));
@@ -96,7 +96,7 @@ describe.each([
         finishMock,
       );
     });
-    let result = await testTV.getCurrentApp();
+    const result = await testTV.getCurrentApp();
     await testTV.disconnect();
     await doneMocking;
     expect(received).toBe(true);
@@ -117,7 +117,7 @@ describe.each([
   beforeEach(async () => {
     mockSocket = createSocket(socketType);
     await promisify(mockSocket.bind).bind(mockSocket)();
-    let port = mockSocket.address().port;
+    const port = mockSocket.address().port;
     testSettings = {
       ...DefaultSettings,
       networkWolPort: port,
