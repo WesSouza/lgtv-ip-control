@@ -223,6 +223,18 @@ Sets the volume mute state.
 await lgtv.setVolumeMute(false);
 ```
 
+### `.setScreenMute(mode: ScreenMuteModes)`
+
+Sets the current screen mute mode. This can be used to either completely blank
+the screen or just blank the video feed while leaving the OSD visible.
+Returns a promise.
+
+```ts
+await lgtv.setScreenMute(ScreenMuteModes.screenmuteon);
+```
+
+See [`ScreenMuteModes`](#ScreenMuteModes) for available levels.
+
 ## Available Lists
 
 ### EnergySavingLevels
@@ -299,6 +311,14 @@ await lgtv.setVolumeMute(false);
 | volumeMute      | Mute Toggle          |
 | volumeUp        | Volume Up            |
 | yellowButton    | Yellow Button        |
+
+### ScreenMuteModes
+
+| Key          | Effect                   |
+| ------------ | ------------------------ |
+| screenMuteOn | Blank screen             |
+| videoMuteOn  | Blank video, OSD visible |
+| allMuteOff   | Normal Operation         |
 
 ## Development
 

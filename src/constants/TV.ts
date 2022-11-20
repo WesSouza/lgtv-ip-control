@@ -95,3 +95,9 @@ export enum PictureModes {
   sports = 'sports',
   vivid = 'vivid',
 }
+
+export enum ScreenMuteModes {
+  screenMuteOn = 'screenmuteon',
+  videoMuteOn = 'videomuteon',
+  allMuteOff = 'allmuteoff',
+}
