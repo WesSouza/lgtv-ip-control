@@ -7,6 +7,7 @@ import {
   Inputs,
   Keys,
   PictureModes,
+  ScreenMuteModes,
 } from '../constants/TV.js';
 import { LGEncryption } from './LGEncryption.js';
 import { TinySocket } from './TinySocket.js';
@@ -83,6 +84,10 @@ export class LGTV {
       'key must be valid',
     );
     return await this.sendCommand(`KEY_ACTION ${key}`);
+  }
+
+  async screenMute(mode: ScreenMuteModes) {
+    return await this.sendCommand(`SCREEN_MUTE ${mode}`);
   }
 
   async setEnergySaving(level: EnergySavingLevels) {
