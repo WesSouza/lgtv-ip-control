@@ -11,7 +11,12 @@ import {
 import { LGEncryption } from './LGEncryption.js';
 import { TinySocket } from './TinySocket.js';
 
-const IntegerMatcher = /^\d+$/;
+export class ResponseParseError extends Error {}
+
+function throwIfNotOK(response: string) {
+  if (response != 'OK')
+    throw new ResponseParseError(`response not 'OK': ${response}`);
+}
 
 export class LGTV {
   encryption: LGEncryption;
@@ -33,89 +38,100 @@ export class LGTV {
     return this.encryption.decrypt(encryptedResponse);
   }
 
-  async connect() {
+  async connect(): Promise<void> {
     await this.socket.connect();
   }
 
-  async disconnect() {
+  async disconnect(): Promise<void> {
     await this.socket.disconnect();
   }
 
-  async getCurrentApp() {
-    return await this.sendCommand('CURRENT_APP');
+  async getCurrentApp(): Promise<Apps | string> {
+    const response = await this.sendCommand('CURRENT_APP');
+    const match = response.match(/^APP:([\w.]+)$/);
+    if (!match)
+      throw new ResponseParseError(`failed to parse response: ${response}`);
+    return match[1];
   }
 
-  async getCurrentVolume() {
-    return await this.sendCommand('CURRENT_VOL');
+  async getCurrentVolume(): Promise<number> {
+    const response = await this.sendCommand('CURRENT_VOL');
+    const match = response.match(/^VOL:(\d+)$/);
+    if (!match)
+      throw new ResponseParseError(`failed to parse response: ${response}`);
+    return parseInt(match[1], 10);
   }
 
-  async getIpControlState() {
-    return await this.sendCommand('GET_IPCONTROL_STATE');
+  async getIpControlState(): Promise<boolean> {
+    const response = await this.sendCommand('GET_IPCONTROL_STATE');
+    if (response != 'ON')
+      throw new ResponseParseError(`failed to parse response: ${response}`);
+    return true;
   }
 
-  async getMacAddress(type: 'wired' | 'wifi') {
+  async getMacAddress(type: 'wired' | 'wifi'): Promise<string> {
     return await this.sendCommand(`GET_MACADDRESS ${type}`);
   }
 
-  async getMuteState() {
-    return await this.sendCommand('MUTE_STATE');
+  async getMuteState(): Promise<boolean> {
+    const response = await this.sendCommand('MUTE_STATE');
+    const match = response.match(/^MUTE:(on|off)$/);
+    if (!match)
+      throw new ResponseParseError(`failed to parse response: ${response}`);
+    if (match[1] == 'on') return true;
+    return false;
   }
 
-  async powerOff() {
-    return await this.sendCommand(`POWER off`);
+  async powerOff(): Promise<void> {
+    throwIfNotOK(await this.sendCommand(`POWER off`));
   }
 
-  async launchApp(name: Apps | string) {
-    return await this.sendCommand(`APP_LAUNCH ${name}`);
+  async launchApp(name: Apps | string): Promise<void> {
+    throwIfNotOK(await this.sendCommand(`APP_LAUNCH ${name}`));
   }
 
-  async setPictureMode(mode: PictureModes) {
-    return await this.sendCommand(`PICTURE_MODE ${mode}`);
+  async setPictureMode(mode: PictureModes): Promise<void> {
+    assert(Object.values(PictureModes).includes(mode), 'mode must be valid');
+    throwIfNotOK(await this.sendCommand(`PICTURE_MODE ${mode}`));
   }
 
   powerOn() {
     this.socket.wakeOnLan();
   }
 
-  async sendKey(key: Keys) {
-    assert(
-      Object.values(Keys).some((availableKey) => availableKey === key),
-      'key must be valid',
-    );
-    return await this.sendCommand(`KEY_ACTION ${key}`);
+  async sendKey(key: Keys): Promise<void> {
+    assert(Object.values(Keys).includes(key), 'key must be valid');
+    throwIfNotOK(await this.sendCommand(`KEY_ACTION ${key}`));
   }
 
-  async setEnergySaving(level: EnergySavingLevels) {
+  async setEnergySaving(level: EnergySavingLevels): Promise<void> {
     assert(
-      Object.values(EnergySavingLevels).some(
-        (availableOption) => availableOption === level,
-      ),
+      Object.values(EnergySavingLevels).includes(level),
       'level must be valid',
     );
-    return await this.sendCommand(`ENERGY_SAVING ${level}`);
+    throwIfNotOK(await this.sendCommand(`ENERGY_SAVING ${level}`));
   }
 
-  async setInput(input: Inputs) {
-    assert(
-      Object.values(Inputs).some((availableInput) => availableInput === input),
-      'input must be valid',
-    );
-    return await this.sendCommand(`INPUT_SELECT ${input}`);
+  async setInput(input: Inputs): Promise<void> {
+    assert(Object.values(Inputs).includes(input), 'input must be valid');
+    throwIfNotOK(await this.sendCommand(`INPUT_SELECT ${input}`));
   }
 
-  async setVolume(volumeLevel: number) {
+  async setVolume(volumeLevel: number): Promise<void> {
     assert(
       typeof volumeLevel === 'number' &&
-        IntegerMatcher.test(volumeLevel.toString()) &&
+        Number.isInteger(volumeLevel) &&
         volumeLevel >= 0 &&
         volumeLevel <= 100,
       'volumeLevel must be an integer between 0 and 100',
     );
-    return await this.sendCommand(`VOLUME_CONTROL ${volumeLevel}`);
+    throwIfNotOK(await this.sendCommand(`VOLUME_CONTROL ${volumeLevel}`));
   }
 
-  async setVolumeMute(isMuted: boolean) {
+  async setVolumeMute(isMuted: boolean): Promise<void> {
     assert(typeof isMuted === 'boolean', 'isMuted must be a boolean');
-    return await this.sendCommand(`VOLUME_MUTE ${isMuted ? 'on' : 'off'}`);
+    throwIfNotOK(
+      await this.sendCommand(`VOLUME_MUTE ${isMuted ? 'on' : 'off'}`),
+    );
   }
 }

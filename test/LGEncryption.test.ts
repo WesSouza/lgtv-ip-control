@@ -50,9 +50,12 @@ describe('decrypt', () => {
       `${encryptedIv}${encryptedData}`,
       'hex',
     );
-    const expectedPlainText = 'VOLUME_MUTE on\x0d\x01';
+    const expectedPlainText = 'VOLUME_MUTE on';
 
-    const encryption = new LGEncryption(exampleKeyCode);
+    const encryption = new LGEncryption(exampleKeyCode, {
+      ...DefaultSettings,
+      responseTerminator: '\r',
+    });
     const decryptedData = encryption.decrypt(exampleCipherText);
 
     expect(decryptedData).toEqual(expectedPlainText);
