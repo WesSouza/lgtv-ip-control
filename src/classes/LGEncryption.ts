@@ -12,6 +12,7 @@ export interface EncryptionSettings {
   keycodeFormat: RegExp;
   messageBlockSize: number;
   messageTerminator: string;
+  responseTerminator: string;
 }
 
 function assertSettings(settings: EncryptionSettings) {
@@ -29,6 +30,7 @@ function assertSettings(settings: EncryptionSettings) {
     keycodeFormat,
     messageBlockSize,
     messageTerminator,
+    responseTerminator,
   } = settings;
   assert(
     typeof encryptionIvLength === 'number' && encryptionIvLength > 0,
@@ -62,6 +64,10 @@ function assertSettings(settings: EncryptionSettings) {
   assert(
     typeof messageTerminator === 'string' && messageTerminator.length > 0,
     'settings.messageTerminator must be a string with length greater than 0',
+  );
+  assert(
+    typeof responseTerminator === 'string' && responseTerminator.length > 0,
+    'settings.responseTerminator must be a string with length greater than 0',
   );
 }
 
@@ -152,8 +158,12 @@ export class LGEncryption {
 
     const cbcDecypher = createDecipheriv('aes-128-cbc', this.derivedKey, iv);
     cbcDecypher.setAutoPadding(false);
-    return cbcDecypher
+    const decrypted = cbcDecypher
       .update(cipher.slice(this.settings.encryptionKeyLength))
       .toString();
+    return decrypted.substring(
+      0,
+      decrypted.indexOf(this.settings.responseTerminator),
+    );
   }
 }

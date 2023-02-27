@@ -12,7 +12,7 @@ model.
 
 **Requirements**
 
-- LG TV (tested on model OLED65B9PUA)
+- LG TV (tested on model OLED65B9PUA and OLED42C2PUA)
 - Node 12+ (at least ES2017)
 
 **Installing**
@@ -90,9 +90,9 @@ const lgtv = new LGTV(
 );
 ```
 
-### `.connect()`
+### `.connect(): Promise<void>`
 
-Connects to the TV using HTTP. Returns a promise.
+Connects to the TV using TCP.
 
 Required before sending any commands.
 
@@ -100,76 +100,75 @@ Required before sending any commands.
 await lgtv.connect();
 ```
 
-### `.disconnect()`
+### `.disconnect(): Promise<void>`
 
-Disconnects from the TV. Returns a promise.
+Disconnects from the TV.
 
 ```ts
 await lgtv.disconnect();
 ```
 
-### `.getCurrentApp()`
+### `.getCurrentApp(): Promise<Apps | string>`
 
-Gets the current app. Returns a promise.
+Gets the current app. May be one of the `Apps` enum or an arbitrary string if
+the app type is unknown.
 
 ```ts
 const currentApp = await lgtv.getCurrentApp();
 ```
 
-### `.getCurrentVolume()`
+### `.getCurrentVolume(): Promise<number>`
 
-Gets the current volume. Returns a promise.
+Gets the current volume as an integer from `0` to `100`.
 
 ```ts
 const currentVolume = await lgtv.getCurrentVolume();
 ```
 
-### `.getIpControlState()`
+### `.getIpControlState(): Promise<boolean>`
 
-Gets the ip control state. Returns a promise.
+Gets the ip control state.
 
 ```ts
 const ipControlState = await lgtv.getIpControlState();
 ```
 
-### `.getMacAddress(type: 'wired' | 'wifi')`
+### `.getMacAddress(type: 'wired' | 'wifi'): Promise<string>`
 
-Gets the mac address by type. Returns a promise.
+Gets the MAC address by network interface.
 
 ```ts
 const macAddress = await lgtv.getMacAddress('wired');
 ```
 
-### `.getMuteState()`
+### `.getMuteState(): Promise<boolean>`
 
-Gets the mute state. Returns a promise.
+Gets the mute state.
 
 ```ts
 const muteState = await lgtv.getMuteState();
 ```
 
-### `.powerOff()`
+### `.powerOff(): Promise<void>`
 
-Powers the TV off. Returns a promise.
+Powers the TV off.
 
 ```ts
 await lgtv.powerOff();
 ```
 
-### `.powerOn()`
+### `.powerOn(): void`
 
 Powers the TV on, using Wake On Lan. Requires MAC address to be set when
 creating the `LGTV` instance.
-
-Returns nothing.
 
 ```ts
 lgtv.powerOn();
 ```
 
-### `.sendKey(key: Keys)`
+### `.sendKey(key: Keys): Promise<void>`
 
-Sends a `key`, as if it was pressed on the TV remote control. Returns a promise.
+Sends a `key`, as if it was pressed on the TV remote control.
 
 ```ts
 await lgtv.sendKey(Keys.menu);
@@ -177,9 +176,10 @@ await lgtv.sendKey(Keys.menu);
 
 See [`Keys`](#Keys) for available keys.
 
-### `.setEnergySaving(level: EnergySavingLevels)`
+### `.setEnergySaving(level: EnergySavingLevels): Promise<void>`
 
-Sets the current energy saving level. Returns a promise.
+Sets the current energy saving level. Note that `screenOff` is known not to
+work for some models.
 
 ```ts
 await lgtv.setEnergySaving(EnergySavingLevels.maximum);
@@ -187,9 +187,9 @@ await lgtv.setEnergySaving(EnergySavingLevels.maximum);
 
 See [`EnergySavingLevels`](#EnergySavingLevels) for available levels.
 
-### `.setInput(input: Inputs)`
+### `.setInput(input: Inputs): Promise<void>`
 
-Sets the current TV input. Returns a promise.
+Sets the current TV input.
 
 ```ts
 await lgtv.setInput(Inputs.hdmi1);
@@ -197,17 +197,17 @@ await lgtv.setInput(Inputs.hdmi1);
 
 See [`Inputs`](#Inputs) for available inputs.
 
-### `.setVolume(volume: number)`
+### `.setVolume(volume: number): Promise<void>`
 
-Sets the volume level, from `0` to `100`. Returns a promise.
+Sets the volume level as an integer from `0` to `100`.
 
 ```ts
 await lgtv.setVolume(15);
 ```
 
-### `.setVolumeMute(isMuted: boolean)`
+### `.setVolumeMute(isMuted: boolean): Promise<void>`
 
-Sets the volume mute state. Returns a promise.
+Sets the volume mute state.
 
 ```ts
 await lgtv.setVolumeMute(false);

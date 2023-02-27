@@ -10,6 +10,7 @@ export const DefaultSettings = {
   keycodeFormat: /[A-Z0-9]{8}/,
   messageBlockSize: 16,
   messageTerminator: '\r',
+  responseTerminator: '\n',
   networkPort: 9761,
   networkTimeout: 5000,
   networkWolAddress: '255.255.255.255',
