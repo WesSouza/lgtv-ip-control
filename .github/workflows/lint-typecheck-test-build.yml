@@ -23,7 +23,7 @@ jobs:
 
       - name: Install wes-cli
         run: |
-          npm i -g wes-cli@2.0.1
+          npm i -g wes-cli@3.0.0
           wes install
 
       - name: Use Node ${{ matrix.node }}
