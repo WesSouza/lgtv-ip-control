@@ -45,6 +45,8 @@ Before anything, you need to enable Network IP Control, which is very easy:
 Here's a very basic example of how to control the TV:
 
 ```ts
+import { LGTV } from 'lgtv-ip-control';
+
 const tv = new LGTV('192.168.1.100', '1a:2b:3c:4d:5e:6f', 'KEY1C0DE');
 
 tv.connect()
@@ -56,6 +58,14 @@ tv.connect()
     console.log('Done!');
   })
   .catch(console.error);
+```
+
+To use `import`, you need to make sure to save the file as `.mjs` or to specify `"type": "module"` on your `package.json`. [Learn more about Node.js' support for ESM.](https://nodejs.org/api/esm.html)
+
+Otherwise replace the first line with:
+
+```js
+const { LGTV } = require('lgtv-ip-control');
 ```
 
 ### `new LGTV()`
