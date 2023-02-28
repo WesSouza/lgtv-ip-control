@@ -105,8 +105,9 @@ export class LGTV {
     throwIfNotOK(await this.sendCommand(`KEY_ACTION ${key}`));
   }
 
-  async screenMute(mode: ScreenMuteModes) {
-    return await this.sendCommand(`SCREEN_MUTE ${mode}`);
+  async setScreenMute(mode: ScreenMuteModes) {
+    assert(Object.values(ScreenMuteModes).includes(mode), 'mode must be valid');
+    throwIfNotOK(await this.sendCommand(`SCREEN_MUTE ${mode}`));
   }
 
   async setEnergySaving(level: EnergySavingLevels): Promise<void> {

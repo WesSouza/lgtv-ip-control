@@ -223,7 +223,7 @@ Sets the volume mute state.
 await lgtv.setVolumeMute(false);
 ```
 
-### `.setScreenMute(mode: ScreenMuteModes)`
+### `.setScreenMute(mode: ScreenMuteModes): Promise<void>`
 
 Sets the current screen mute mode. This can be used to either completely blank
 the screen or just blank the video feed while leaving the OSD visible.
@@ -233,7 +233,7 @@ Returns a promise.
 await lgtv.setScreenMute(ScreenMuteModes.screenmuteon);
 ```
 
-See [`ScreenMuteModes`](#ScreenMuteModes) for available levels.
+See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 
 ## Available Lists
 
