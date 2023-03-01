@@ -6,6 +6,7 @@
 
 This is a JS library that implements TCP network control for LG TVs manufactured
 since 2018. It utilizes encryption rules based on a guide found on the internet.
+A non-encrypted mode is provided for older models, but hasn't been tested.
 
 This is not provided by LG, and it is not a complete implementation for every TV
 model.
@@ -85,7 +86,8 @@ const lgtv = new LGTV(
   '1a:2b:3c:4d:5e:6f',
 
   /**
-   * Encryption Keycode, as generated during "Setting Up the TV" above
+   * Encryption Keycode, as generated during "Setting Up the TV" above.
+   * If not provided, uses clear text, but is required by most models.
    */
   'KEY1C0DE',
 
