@@ -11,6 +11,7 @@ import {
   Inputs,
   Keys,
   PictureModes,
+  ScreenMuteModes,
 } from './constants/TV.js';
 
 function createCommand(name: string, description: string) {
@@ -208,6 +209,25 @@ export function makeProgram() {
       }),
     );
 
+  const screenmute = createCommand(
+    'screenmute',
+    'Blank either the input video or the entire screen.',
+  )
+    .addArgument(
+      new Argument('<mode>', 'Named screen mute mode.').choices([
+        ...Object.keys(ScreenMuteModes),
+      ]),
+    )
+    .action(
+      wrapTVAction(async (tv, mode) => {
+        await tv.connect();
+        await tv.setScreenMute(
+          ScreenMuteModes[mode as keyof typeof ScreenMuteModes],
+        );
+        await tv.disconnect();
+      }),
+    );
+
   const program = new Command()
     .requiredOption('-o, --host <address>', 'IP or DNS address of TV.')
     .option('-m, --mac <address>', 'MAC address of TV. Required for power on.')
@@ -239,7 +259,8 @@ export function makeProgram() {
     .addCommand(energysaving)
     .addCommand(key)
     .addCommand(mac)
-    .addCommand(picturemode);
+    .addCommand(picturemode)
+    .addCommand(screenmute);
 
   return program;
 }
