@@ -85,6 +85,7 @@ describe.each([
       // Graceful shutdown of net.Server doesn't work correctly on macOS.
       // Work around it by making sure the socket has a chance to close first.
       await new Promise((resolve) => setImmediate(resolve));
+      await new Promise((resolve) => setImmediate(resolve));
       await promisify(mockServer.close).bind(mockServer)();
     });
 
