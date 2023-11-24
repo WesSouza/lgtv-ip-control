@@ -4,19 +4,67 @@
 
 <a href="https://www.npmjs.com/package/lgtv-ip-control"><img src="https://img.shields.io/npm/v/lgtv-ip-control" alt="npm version badge"></a>
 
-This is a JS library that implements TCP network control for LG TVs manufactured
-since 2018. It utilizes encryption rules based on a guide found on the internet.
-A non-encrypted mode is provided for older models, but hasn't been tested.
+This is a JS library that implements network control for LG TVs manufactured
+since 2018.
+The interface used is a TCP adaptation of LG's older serial port control
+interface meant for use in hotels and venues and is distinct from LG's
+HTTP and cloud based consumer device control interfaces.
+This library implements LG's proprietary encryption algorithm based on a
+guide found on the internet.
 
-This is not provided by LG, and it is not a complete implementation for every TV
-model.
+This library is not provided by LG, and it is not a complete implementation
+for every TV model.
 
-**Requirements**
+## Televisions
 
-- LG TV (tested on model OLED65B9PUA and OLED42C2PUA)
-- Node 12+ (at least ES2017)
+According to LG's own documentation, this tool should generally work with all
+models after 2018, though not every feature included here may work on every TV.
+Due to scarce documentation by LG, functionality specific to some model
+variants may be missing.
 
-**Installing**
+All models since 2018 should require encryption and will generate a keycode that
+needs to be used by the client to initialize the encryption.
+Some LG docs indicate that there were older models that supported this interface
+without encryption.
+A non-encrypted mode is provided in an attempt to support these models, but
+hasn't been tested.
+
+### Tested Models
+
+- OLED65B9PUA
+- OLED42C2PUA
+
+Users report that CX models work, but with the limitation that the Freesat input
+can't be directly selected.
+
+### TV Setup
+
+Before the TV can be controlled using this library, Network IP Control needs to
+be enabled.
+It's found in a hidden menu that can be easily accessed.
+
+1. Open the "All Settings" menu on the TV.
+2. Using the remote arrows, navigate the focus to "Connection" but do not enter
+   it.
+   For some TVs, this may say "Network" instead.
+3. Quickly, press `82888` using the remote numeric buttons.
+4. Note the MAC and IP addresses for client configuration.
+   The MAC address is required to remotely power on the TV.
+5. Select and enable "Network IP Control".
+6. For TVs that require encryption, there is a "Generate Keycode" option.
+   Click it and note the 8 characters code displayed for client configuration.
+   This keycode is required for all commands except power on.
+   A new keycode can be generated at any time.
+7. To allow the TV to be powered on remotely, enable "Wake On LAN".
+
+## Library
+
+### Requirements
+
+- Node 16+ (at least ES2017)
+- NPM or Yarn Classic
+
+### Installation
 
 ```sh
 # Using NPM
@@ -26,22 +74,7 @@ npm install lgtv-ip-control
 yarn add lgtv-ip-control
 ```
 
-## Setting Up the TV
-
-Before anything, you need to enable Network IP Control, which is very easy:
-
-1. Open the "All Settings" menu on the TV
-2. Using the remote arrows, navigate the focus to "Connection", do not enter it.
-   For some TVs, this may say "Network" instead.
-3. Quickly, press `82888` using the remote numeric buttons
-4. Note the MAC IP addresses for reference and library configuration
-5. Turn "Network IP Control" on
-6. Click "Generate Keycode", and take note of the 8 characters code displayed on
-   the message for reference and library configuration. You can generate a new
-   code at any time
-7. If you want to be able to turn the TV on, turn "Wake On LAN" on
-
-## Library Usage
+### Usage
 
 Here's a very basic example of how to control the TV:
 
@@ -237,7 +270,7 @@ await lgtv.setScreenMute(ScreenMuteModes.screenmuteon);
 
 See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 
-## Available Lists
+## Identifiers
 
 ### EnergySavingLevels
 
