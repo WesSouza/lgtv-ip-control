@@ -1,0 +1,43 @@
+name: CLI Pre-release
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  release:
+    name: Prerelease
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install wes-cli
+        run: |
+          npm i -g wes-cli@3.0.1
+          wes install
+
+      - name: Install Node 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Test
+        run: yarn test:ci
+
+      - name: Build
+        run: yarn build
+
+      - name: Package
+        run: yarn pkg
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Automatic Development Build"
+          files: dist-bin/*
