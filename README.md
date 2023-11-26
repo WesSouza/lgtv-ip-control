@@ -71,8 +71,10 @@ Options:
   -m, --mac <address>          MAC address of TV. Required for power on.
   -k, --keycode <keycode>      Encryption keycode provided by TV.
   -p, --port <port>            LG IP control server port. (default: 9761)
-  -w, --wol_address <address>  Broadcast address used by WOL for power on. Must be set if TV is not on local subnet.
-  -t, --timeout <seconds>      Time for television to respond to a command before an error is returned. (default: 5)
+  -w, --wol_address <address>  Broadcast address used by WOL for power on. Must be set if
+                               TV is not on local subnet.
+  -t, --timeout <seconds>      Time for television to respond to a command before an error
+                               is returned. (default: 5)
   -h, --help                   display help for command
 
 Commands:
