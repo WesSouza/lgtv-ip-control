@@ -264,9 +264,3 @@ export function makeProgram() {
 
   return program;
 }
-
-/*
-console.log("port: " + program.opts().port);
-console.log("timeout: " + program.opts().timeout);
-console.log("mac: " + program.opts().mac);
-*/
