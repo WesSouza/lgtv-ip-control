@@ -1,6 +1,6 @@
 # LG TV IP Control
 
-<a href="https://github.com/WesSouza/lgtv-ip-control/actions?query=branch%3Amaster+workflow%3A%22Install%2C+lint%2C+test+and+build%22"><img src="https://github.com/WesSouza/lgtv-ip-control/workflows/Install,%20lint,%20test%20and%20build/badge.svg" alt="Install, lint, test and build status badge"></a>
+<a href="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml"><img src="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml/badge.svg" alt="Lint, Type Check, Test, Build"></a>
 
 <a href="https://www.npmjs.com/package/lgtv-ip-control"><img src="https://img.shields.io/npm/v/lgtv-ip-control" alt="npm version badge"></a>
 
