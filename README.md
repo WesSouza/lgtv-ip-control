@@ -302,11 +302,25 @@ await lgtv.setVolumeMute(false);
 
 ## Development
 
-This library uses `wes-cli`, which simplifies configuration setup. Instead of
-using `yarn install`, you should use `npx wes-cli install`, which will create
-all configuration files and run `yarn install`.
+Install
+[Node.js](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) and
+[Yarn v1](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable).
 
-[Read more about `wes-cli`.](https://github.com/WesSouza/wes-cli/#wes-install)
+On a terminal, run:
+
+```sh
+yarn install
+```
+
+Before committing, make sure to check the code is formatted, linted, and tests
+and building work:
+
+```sh
+yarn check:format
+yarn check:types
+yarn test
+yarn build
+```
 
 ## License
 
