@@ -12,6 +12,7 @@ import {
   Inputs,
   Keys,
   PictureModes,
+  ScreenMuteModes,
 } from '../src/constants/TV.js';
 
 const CRYPT_KEY = 'M9N0AZ62';
@@ -183,6 +184,19 @@ describe.each([
     if (!error) mocking = mockResponse(`KEY_ACTION ${key}`, 'OK');
     await testTV.connect();
     const actual = testTV.sendKey(key as Keys);
+    if (!error) await expect(mocking).resolves.not.toThrow();
+    if (error) await expect(actual).rejects.toThrow();
+    else await expect(actual).resolves.not.toThrow();
+  });
+
+  it.each([
+    { mode: ScreenMuteModes.screenMuteOn, error: false },
+    { mode: 'foobar', error: true },
+  ])('sets picture mode: $mode', async ({ mode, error }) => {
+    let mocking: Promise<void> | null = null;
+    if (!error) mocking = mockResponse(`SCREEN_MUTE ${mode}`, 'OK');
+    await testTV.connect();
+    const actual = testTV.setScreenMute(mode as ScreenMuteModes);
     if (!error) await expect(mocking).resolves.not.toThrow();
     if (error) await expect(actual).rejects.toThrow();
     else await expect(actual).resolves.not.toThrow();
