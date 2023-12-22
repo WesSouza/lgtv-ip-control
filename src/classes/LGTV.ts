@@ -9,7 +9,7 @@ import {
   PictureModes,
   ScreenMuteModes,
 } from '../constants/TV.js';
-import { LGEncryption } from './LGEncryption.js';
+import { LGEncoder, LGEncryption } from './LGEncryption.js';
 import { TinySocket } from './TinySocket.js';
 
 export class ResponseParseError extends Error {}
@@ -20,23 +20,25 @@ function throwIfNotOK(response: string) {
 }
 
 export class LGTV {
-  encryption: LGEncryption;
+  encoder: LGEncoder;
   socket: TinySocket;
 
   constructor(
     host: string,
     macAddress: string | null,
-    keycode: string,
+    keycode: string | null,
     settings = DefaultSettings,
   ) {
     this.socket = new TinySocket(host, macAddress, settings);
-    this.encryption = new LGEncryption(keycode, settings);
+    this.encoder = keycode
+      ? new LGEncryption(keycode, settings)
+      : new LGEncoder(settings);
   }
 
   private async sendCommand(command: string) {
-    const encryptedData = this.encryption.encrypt(command);
-    const encryptedResponse = await this.socket.sendReceive(encryptedData);
-    return this.encryption.decrypt(encryptedResponse);
+    const request = this.encoder.encode(command);
+    const response = await this.socket.sendReceive(request);
+    return this.encoder.decode(response);
   }
 
   async connect(): Promise<void> {
