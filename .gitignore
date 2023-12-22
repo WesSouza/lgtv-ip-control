@@ -2,7 +2,13 @@
 node_modules
 *.log*
 
+# VIM
+*~
+*.swp
+*.swo
+
 dist
+dist-bin
 coverage
 
 # Visual Studio Code
