@@ -44,4 +44,4 @@ jobs:
         run: yarn test:ci
 
       - name: Build
-        run: yarn build
+        run: yarn workspaces run build

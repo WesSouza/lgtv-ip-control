@@ -25,7 +25,7 @@ export default [
     plugins: [
       esbuild(),
       typescript({
-        tsconfig: '.config/tsconfig.build.json',
+        tsconfig: './tsconfig.build.json',
         declaration: true,
         declarationDir: 'dist',
       }),

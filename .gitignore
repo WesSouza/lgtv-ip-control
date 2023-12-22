@@ -2,8 +2,8 @@
 node_modules
 *.log*
 
-/dist
-/coverage
+dist
+coverage
 
 # Visual Studio Code
 .vscode/*
