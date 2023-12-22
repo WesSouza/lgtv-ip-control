@@ -31,6 +31,9 @@ jobs:
       - name: Install
         run: yarn install --frozen-lockfile
 
+      - name: Build
+        run: yarn workspaces run build
+
       - name: Check formatting
         run: yarn check:format
 
@@ -42,6 +45,3 @@ jobs:
 
       - name: Test
         run: yarn test:ci
-
-      - name: Build
-        run: yarn workspaces run build
