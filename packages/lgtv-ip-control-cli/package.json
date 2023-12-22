@@ -32,11 +32,11 @@
     "test": "vitest run -c ../../.config/vite.config.mts"
   },
   "dependencies": {
+    "@commander-js/extra-typings": "^9.4.1",
     "commander": "^9.4.1",
     "lgtv-ip-control": "^3.1.0"
   },
   "devDependencies": {
-    "@commander-js/extra-typings": "^9.4.1",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.10.5",
     "@vitest/coverage-v8": "^1.1.0",
