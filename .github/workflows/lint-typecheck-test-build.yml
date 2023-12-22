@@ -16,8 +16,7 @@ jobs:
         node: ['18.x', '20.x']
         os:
           - ubuntu-latest
-          # FIXME: Some tests are failing on macOS because of unhandled exceptions.
-          # - macOS-latest
+          - macOS-latest
 
     steps:
       - name: Checkout repo
