@@ -37,13 +37,17 @@ describe('LGEncryption', () => {
   it('throws if keycode has wrong length', () => {
     expect(() => {
       new LGEncryption('123');
-    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[AssertionError: keycode format is invalid]`,
+    );
   });
 
   it('throws if keycode has lowercase characters', () => {
     expect(() => {
       new LGEncryption('1234abcd');
-    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[AssertionError: keycode format is invalid]`,
+    );
   });
 
   it('encodes', () => {
