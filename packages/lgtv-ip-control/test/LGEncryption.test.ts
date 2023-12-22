@@ -3,13 +3,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { LGEncoder, LGEncryption } from '../src/classes/LGEncryption.js';
 import { DefaultSettings } from '../src/constants/DefaultSettings.js';
 
-describe('LGencoder', () => {
+describe('LGEncoder', () => {
   it('constructs with valid parameters', () => {
     const encoder = new LGEncoder(DefaultSettings);
     expect(encoder).toBeTruthy();
   });
 
-  it('encode', () => {
+  it('encodes', () => {
     const exampleCommand = 'VOLUME_MUTE on';
 
     const encoder = new LGEncoder();
@@ -17,7 +17,7 @@ describe('LGencoder', () => {
     expect(encodeedData).toEqual(`${exampleCommand}\r`);
   });
 
-  it('decode', () => {
+  it('decodes', () => {
     const expectedPlainText = 'VOLUME_MUTE on';
 
     const encoder = new LGEncoder();
@@ -37,16 +37,20 @@ describe('LGEncryption', () => {
   it('throws if keycode has wrong length', () => {
     expect(() => {
       new LGEncryption('123');
-    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[AssertionError: keycode format is invalid]`,
+    );
   });
 
   it('throws if keycode has lowercase characters', () => {
     expect(() => {
       new LGEncryption('1234abcd');
-    }).toThrowErrorMatchingInlineSnapshot(`"keycode format is invalid"`);
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[AssertionError: keycode format is invalid]`,
+    );
   });
 
-  it('encode', () => {
+  it('encodes', () => {
     vi.spyOn(Math, 'random').mockImplementation(() => 0);
 
     // This data comes from the LG document
@@ -64,7 +68,7 @@ describe('LGEncryption', () => {
     vi.mocked(Math.random).mockRestore();
   });
 
-  it('decode', () => {
+  it('decodes', () => {
     // This data comes from the LG document
     const exampleKeyCode = '12345678';
     const encryptedIv = 'd2b21ca0ad6486cb2056a8b815033508';

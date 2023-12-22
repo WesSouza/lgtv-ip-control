@@ -4,15 +4,15 @@ import {
   InvalidArgumentError,
 } from '@commander-js/extra-typings';
 
-import { LGTV } from './classes/LGTV.js';
-import { DefaultSettings } from './constants/DefaultSettings.js';
 import {
+  DefaultSettings,
   EnergySavingLevels,
   Inputs,
   Keys,
+  LGTV,
   PictureModes,
   ScreenMuteModes,
-} from './constants/TV.js';
+} from 'lgtv-ip-control';
 
 function createCommand(name: string, description: string) {
   return new Command(name).description(description).allowExcessArguments(false);

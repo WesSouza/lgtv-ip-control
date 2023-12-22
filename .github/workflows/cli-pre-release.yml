@@ -25,14 +25,11 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Test
-        run: yarn test:ci
-
       - name: Build
-        run: yarn build
+        run: yarn workspace lgtv-ip-control-cli run build
 
       - name: Package
-        run: yarn pkg
+        run: yarn workspace lgtv-ip-control-cli run build-binaries
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
@@ -40,4 +37,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: true
           title: "Automatic Development Build"
-          files: dist-bin/*
+          files: packages/lgtv-ip-control-cli/dist-bin/*

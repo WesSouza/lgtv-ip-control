@@ -1,0 +1,42 @@
+{
+  "name": "lgtv-ip-control-root",
+  "description": "IP Control module for 2018+ LG TVs",
+  "version": "0.0.0",
+  "author": "Wes Souza <hey@wes.dev> (https://wes.dev/)",
+  "license": "MIT",
+  "repository": "WesSouza/lgtv-ip-control",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "check:format": "prettier --config .config/.prettierrc --check ./packages/**/src ./packages/**/test",
+    "check:types": "tsc -p .config/tsconfig.json --noEmit",
+    "coverage": "yarn workspaces run coverage",
+    "format": "prettier --config .config/.prettierrc --write ./packages/**/src ./packages/**/test",
+    "lint": "eslint -c .config/.eslintrc ./packages/**",
+    "test:ci": "yarn workspaces run test:ci",
+    "test": "yarn workspaces run test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "import-sort-style-wes": "^3.0.2",
+    "prettier": "3.1.1",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "typescript": "^5.3.3"
+  },
+  "importSort": {
+    ".js, .jsx": {
+      "parser": "babylon",
+      "style": "wes"
+    },
+    ".ts, .tsx": {
+      "parser": "typescript",
+      "style": "wes"
+    }
+  }
+}

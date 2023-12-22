@@ -1,9 +1,0 @@
-# VIM
-*~
-*.swp
-*.swo
-
-# Built binaries
-lgtv-ip-control-linux
-lgtv-ip-control-macos
-lgtv-ip-control-win.exe

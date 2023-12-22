@@ -1,14 +1,12 @@
 # LG TV IP Control
 
+<a href="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml"><img src="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml/badge.svg" alt="Lint, Type Check, Test, Build"></a>
+
 <a href="https://www.npmjs.com/package/lgtv-ip-control"><img src="https://img.shields.io/npm/v/lgtv-ip-control" alt="npm version badge"></a>
 
-This is a JS library that implements network control for LG TVs manufactured
-since 2018.
-The interface used is a TCP adaptation of LG's older serial port control
-interface meant for use in hotels and venues and is distinct from LG's
-HTTP and cloud based consumer device control interfaces.
-This library implements LG's proprietary encryption algorithm based on a
-guide found on the internet.
+This is a JS library that implements TCP network control for LG TVs manufactured
+since 2018. It utilizes encryption rules based on a guide found on the internet.
+A non-encrypted mode is provided for older models, but hasn't been tested.
 
 This library is not provided by LG, and it is not a complete implementation
 for every TV model.
@@ -57,42 +55,7 @@ It's found in a hidden menu that can be easily accessed.
 
 ## CLI
 
-For simple use cases, a command line interface is provided. Prebuilt binaries are made available for Linux, MacOS, and Windows. All prebuilds are x64 only (no ARM support for MacOS yet, but Rosetta 2 should work).
-
-### Usage
-
-Some commands take discrete identifiers as arguments (e.g. mode, level, key) which are [listed below](#Identifiers).
-
-```
-Usage: lgtv-ip-control [options] [command]
-
-Options:
-  -o, --host <address>         IP or DNS address of TV.
-  -m, --mac <address>          MAC address of TV. Required for power on.
-  -k, --keycode <keycode>      Encryption keycode provided by TV.
-  -p, --port <port>            LG IP control server port. (default: 9761)
-  -w, --wol_address <address>  Broadcast address used by WOL for power on. Must be set if
-                               TV is not on local subnet.
-  -t, --timeout <seconds>      Time for television to respond to a command before an error
-                               is returned. (default: 5)
-  -h, --help                   display help for command
-
-Commands:
-  power <state>                Turn TV on or off.
-  volume [level]               Set the volume level.
-  mute [state]                 Mute TV audio.
-  input <input>                Select input.
-  energysaving <level>         Select energy saving level.
-  key [options] <keys...>      Remote control key presses with optional pauses.
-  mac <iface>                  Retrieve the TV's MAC addresses.
-  picturemode <mode>           Select picture mode.
-  screenmute <mode>            Blank either the input video or the entire screen.
-  help [command]               display help for command
-```
-
-### Excluding
-
-Note that the CLI is optional and can be excluded when installing the library as described below. The CLI will only function if the optional dependencies `commander` and `@commander-js/extra-typings` are present. If not present, the library will continue to work normally.
+See [CLI's README.md](./packages/lgtv-ip-control-cli/README.md)
 
 ## Library
 
@@ -310,7 +273,7 @@ await lgtv.setScreenMute(ScreenMuteModes.screenmuteon);
 
 See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 
-## Identifiers
+## Available Lists
 
 ### EnergySavingLevels
 
@@ -397,11 +360,25 @@ See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 
 ## Development
 
-This library uses `wes-cli`, which simplifies configuration setup. Instead of
-using `yarn install`, you should use `npx wes-cli install`, which will create
-all configuration files and run `yarn install`.
+Install
+[Node.js](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) and
+[Yarn v1](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable).
 
-[Read more about `wes-cli`.](https://github.com/WesSouza/wes-cli/#wes-install)
+On a terminal, run:
+
+```sh
+yarn install
+```
+
+Before committing, make sure to check the code is formatted, linted, and tests
+and building work:
+
+```sh
+yarn check:format
+yarn check:types
+yarn test
+yarn build
+```
 
 ## License
 

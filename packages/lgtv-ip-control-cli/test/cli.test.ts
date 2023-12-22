@@ -1,8 +1,7 @@
-//import { promisify } from 'util';
 import { Command, CommanderError } from '@commander-js/extra-typings';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { LGTV } from '../src/classes/LGTV.js';
+import { LGTV } from 'lgtv-ip-control';
 import { makeProgram } from '../src/cli.js';
 
 describe('commands', () => {

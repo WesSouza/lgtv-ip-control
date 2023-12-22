@@ -1,0 +1,62 @@
+{
+  "name": "lgtv-ip-control-cli",
+  "description": "IP Control CLI for 2018+ LG TVs",
+  "version": "3.1.0",
+  "author": "Wes Souza <hey@wes.dev> (https://wes.dev/)",
+  "license": "MIT",
+  "repository": "WesSouza/lgtv-ip-control",
+  "source": "src/cli.ts",
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/cli.cjs",
+  "module": "./dist/cli.js",
+  "types": "./dist/cli.d.ts",
+  "exports": {
+    "import": "./dist/cli.js",
+    "require": "./dist/cli.cjs"
+  },
+  "bin": {
+    "lgtv-ip-control": "bin/lgtv-ip-control.cjs"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.js",
+    "build-binaries": "pkg .",
+    "coverage": "vitest run -c ../../.config/vite.config.mts --coverage",
+    "prepare": "yarn run build",
+    "test:ci": "vitest run -c ../../.config/vite.config.mts --coverage",
+    "test:ui": "vitest watch -c ../../.config/vite.config.mts --ui",
+    "test:watch": "vitest watch -c ../../.config/vite.config.mts",
+    "test": "vitest run -c ../../.config/vite.config.mts"
+  },
+  "dependencies": {
+    "commander": "^9.4.1",
+    "lgtv-ip-control": "^3.1.0"
+  },
+  "devDependencies": {
+    "@commander-js/extra-typings": "^9.4.1",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/node": "^20.10.5",
+    "@vitest/coverage-v8": "^1.1.0",
+    "@vitest/ui": "^1.1.0",
+    "esbuild": "^0.19.10",
+    "pkg": "^5.8.0",
+    "rollup": "^4.9.1",
+    "rollup-plugin-esbuild": "^6.1.0",
+    "ts-node-dev": "^2.0.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
+  },
+  "pkg": {
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node18-win-x64"
+    ],
+    "outputPath": "dist-bin"
+  }
+}
