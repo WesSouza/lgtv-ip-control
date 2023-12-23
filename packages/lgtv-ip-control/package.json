@@ -1,7 +1,7 @@
 {
   "name": "lgtv-ip-control",
   "description": "IP Control module for 2018+ LG TVs",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "author": "Wes Souza <hey@wes.dev> (https://wes.dev/)",
   "license": "MIT",
   "repository": "WesSouza/lgtv-ip-control",
