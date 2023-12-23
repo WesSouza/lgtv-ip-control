@@ -1,0 +1,155 @@
+# Adapted from https://superface.ai/blog/npm-publish-gh-actions-changelog
+
+name: Release package
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        type: choice
+        description: 'Release type'
+        options:
+        - patch
+        - minor
+        - major
+        - prepatch
+        - preminor
+        - premajor
+        - prerelease
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Git configuration
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          registry-url: https://registry.npmjs.org/
+          node-version: '18'
+          cache: 'yarn'
+
+      - name: Install jq
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: jq
+          version: 1.0
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Build library
+        working-directory: packages/lgtv-ip-control
+        run: yarn run build
+
+      - name: Bump library release version
+        if: startsWith(github.event.inputs.release-type, 'pre') != true
+        working-directory: packages/lgtv-ip-control
+        run: |
+          npm --no-git-tag-version version $RELEASE_TYPE
+          echo "RELEASE_TAG=latest" >> $GITHUB_ENV
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
+
+      - name: Bump library pre-release version
+        if: startsWith(github.event.inputs.release-type, 'pre')
+        working-directory: packages/lgtv-ip-control
+        run: |
+          npm --no-git-tag-version --preid=beta version $RELEASE_TYPE
+          echo "RELEASE_TAG=beta" >> $GITHUB_ENV
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
+
+      - name: Read library release version
+        working-directory: packages/lgtv-ip-control
+        run: echo "NEW_VERSION=v$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Add library package.json to git
+        working-directory: packages/lgtv-ip-control
+        run: git add "package.json"
+
+      - name: Publish library
+        working-directory: packages/lgtv-ip-control
+        run: yarn publish --verbose --access public --tag ${{ env.RELEASE_TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+
+      - name: Install new library version on CLI
+        working-directory: packages/lgtv-ip-control-cli
+        run: yarn add lgtv-ip-control@${{ env.NEW_VERSION }}
+
+      - name: Build CLI
+        working-directory: packages/lgtv-ip-control-cli
+        run: |
+          yarn run build
+          yarn run build-binaries
+
+      - name: Bump CLI release version
+        if: startsWith(github.event.inputs.release-type, 'pre') != true
+        working-directory: packages/lgtv-ip-control-cli
+        run: npm --no-git-tag-version version $RELEASE_TYPE
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
+
+      - name: Bump CLI pre-release version
+        if: startsWith(github.event.inputs.release-type, 'pre')
+        working-directory: packages/lgtv-ip-control-cli
+        run: npm --no-git-tag-version --preid=beta version $RELEASE_TYPE
+        env:
+          RELEASE_TYPE: ${{ github.event.inputs.release-type }}
+
+      - name: Add CLI package.json to git
+        working-directory: packages/lgtv-ip-control-cli
+        run: |
+          git add "package.json"
+
+      - name: Publish CLI
+        working-directory: packages/lgtv-ip-control-cli
+        run: yarn publish --verbose --access public --tag ${{ env.RELEASE_TAG }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMJS_ACCESS_TOKEN }}
+
+      - name: Update changelog
+        uses: superfaceai/release-changelog-action@v2
+        with:
+          version: ${{ env.NEW_VERSION }}
+          operation: release
+
+      - name: Commit CHANGELOG.md and yarn.lock changes and create tag
+        run: |
+          git add "CHANGELOG.md"
+          git add "yarn.lock"
+          git commit -m "Release ${{ env.NEW_VERSION }}"
+          git tag ${{ env.NEW_VERSION }}
+
+      - name: Push changes to repository
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push origin && git push --tags
+
+      - id: get-changelog
+        name: Get version changelog
+        uses: superfaceai/release-changelog-action@v2
+        with:
+          path-to-changelog: CHANGELOG.md
+          version: ${{ env.NEW_VERSION }}
+          operation: read
+
+      - name: Update GitHub release documentation
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.NEW_VERSION }}
+          body: ${{ steps.get-changelog.outputs.changelog }}
+          prerelease: ${{ startsWith(github.event.inputs.release-type, 'pre') }}
+          files: packages/lgtv-ip-control-cli/dist-bin/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
