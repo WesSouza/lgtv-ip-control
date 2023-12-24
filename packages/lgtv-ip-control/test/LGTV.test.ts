@@ -113,19 +113,17 @@ describe.each([
     });
 
     it.each([
+      { response: '', expected: null },
       { response: 'APP:youtube.leanback.v4', expected: Apps.youtube },
       { response: 'APP:com.hbo.hbomax', expected: Apps.hbomax },
       { response: 'APP:netflix', expected: Apps.netflix },
+      { response: 'APP:unsupported', expected: 'unsupported' },
     ])('gets current app: $response', async ({ response, expected }) => {
       const mocking = mockResponse('CURRENT_APP', response);
       await testTV.connect();
       const actual = testTV.getCurrentApp();
       await expect(mocking).resolves.not.toThrow();
-      if (expected === null) {
-        await expect(actual).rejects.toThrow();
-      } else {
-        await expect(actual).resolves.toBe(expected);
-      }
+      await expect(actual).resolves.toBe(expected);
     });
 
     it.each([

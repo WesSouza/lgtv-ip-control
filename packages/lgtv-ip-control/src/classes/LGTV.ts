@@ -50,8 +50,11 @@ export class LGTV {
     await this.socket.disconnect();
   }
 
-  async getCurrentApp(): Promise<Apps | string> {
+  async getCurrentApp(): Promise<Apps | string | null> {
     const response = await this.sendCommand('CURRENT_APP');
+    if (response === '') {
+      return null;
+    }
     const match = response.match(/^APP:([\w.]+)$/);
     if (!match) {
       throw new ResponseParseError(`failed to parse response: ${response}`);

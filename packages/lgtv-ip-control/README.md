@@ -73,7 +73,7 @@ const lgtv = new LGTV(
    */
   {
     ...DefaultSettings,
-  }
+  },
 );
 ```
 
@@ -95,10 +95,11 @@ Disconnects from the TV.
 await lgtv.disconnect();
 ```
 
-### `.getCurrentApp(): Promise<Apps | string>`
+### `.getCurrentApp(): Promise<Apps | string | null>`
 
 Gets the current app. May be one of the `Apps` enum or an arbitrary string if
-the app type is unknown.
+the app type is unknown. Might return `null` if the TV is powered off but still
+responding.
 
 ```ts
 const currentApp = await lgtv.getCurrentApp();
@@ -296,4 +297,3 @@ See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 | screenMuteOn | Blank screen             |
 | videoMuteOn  | Blank video, OSD visible |
 | allMuteOff   | Normal Operation         |
-
