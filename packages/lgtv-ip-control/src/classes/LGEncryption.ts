@@ -41,7 +41,6 @@ export class LGEncoder {
   protected terminateMessage(message: string): string {
     const { messageTerminator } = this.settings;
     assert(typeof message === 'string', 'message must be a string');
-    assert(message.length > 0, 'message must have a length greater than 0');
     assert(
       !message.includes(messageTerminator),
       'message must not include the message terminator character',
