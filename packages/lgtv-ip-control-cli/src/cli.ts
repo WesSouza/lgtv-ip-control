@@ -20,7 +20,9 @@ function createCommand(name: string, description: string) {
 
 function positiveNumber(value: string) {
   const parsed = parseFloat(value);
-  if (parsed < 0) throw new InvalidArgumentError(`Must be a positive number.`);
+  if (parsed < 0) {
+    throw new InvalidArgumentError(`Must be a positive number.`);
+  }
   return parsed;
 }
 
@@ -28,10 +30,11 @@ function positiveNumber(value: string) {
 function rangeInt(min: number, max: number) {
   return (value: string) => {
     const parsed = parseFloat(value);
-    if (!Number.isSafeInteger(parsed) || parsed < min || parsed > max)
+    if (!Number.isSafeInteger(parsed) || parsed < min || parsed > max) {
       throw new InvalidArgumentError(
         `Must be an integer between ${min} and ${max}.`,
       );
+    }
     return parsed;
   };
 }
@@ -46,7 +49,9 @@ export function makeProgram() {
         const tv = new LGTV(opts.host, opts.mac ?? null, opts.keycode);
         return await action(tv, ...args);
       } catch (err) {
-        if (err instanceof Error) program.error(err.message);
+        if (err instanceof Error) {
+          program.error(err.message);
+        }
         throw err;
       }
     };
@@ -79,9 +84,11 @@ export function makeProgram() {
     .action(
       wrapTVAction(async (tv, level) => {
         await tv.connect();
-        if (level === undefined)
+        if (level === undefined) {
           process.stdout.write(String(await tv.getCurrentVolume()) + '\n');
-        else await tv.setVolume(level);
+        } else {
+          await tv.setVolume(level);
+        }
         await tv.disconnect();
       }),
     );

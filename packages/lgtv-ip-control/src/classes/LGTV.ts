@@ -15,8 +15,9 @@ import { TinySocket } from './TinySocket.js';
 export class ResponseParseError extends Error {}
 
 function throwIfNotOK(response: string) {
-  if (response != 'OK')
+  if (response != 'OK') {
     throw new ResponseParseError(`response not 'OK': ${response}`);
+  }
 }
 
 export class LGTV {
@@ -52,23 +53,26 @@ export class LGTV {
   async getCurrentApp(): Promise<Apps | string> {
     const response = await this.sendCommand('CURRENT_APP');
     const match = response.match(/^APP:([\w.]+)$/);
-    if (!match)
+    if (!match) {
       throw new ResponseParseError(`failed to parse response: ${response}`);
+    }
     return match[1];
   }
 
   async getCurrentVolume(): Promise<number> {
     const response = await this.sendCommand('CURRENT_VOL');
     const match = response.match(/^VOL:(\d+)$/);
-    if (!match)
+    if (!match) {
       throw new ResponseParseError(`failed to parse response: ${response}`);
+    }
     return parseInt(match[1], 10);
   }
 
   async getIpControlState(): Promise<boolean> {
     const response = await this.sendCommand('GET_IPCONTROL_STATE');
-    if (response != 'ON')
+    if (response != 'ON') {
       throw new ResponseParseError(`failed to parse response: ${response}`);
+    }
     return true;
   }
 
@@ -79,9 +83,12 @@ export class LGTV {
   async getMuteState(): Promise<boolean> {
     const response = await this.sendCommand('MUTE_STATE');
     const match = response.match(/^MUTE:(on|off)$/);
-    if (!match)
+    if (!match) {
       throw new ResponseParseError(`failed to parse response: ${response}`);
-    if (match[1] == 'on') return true;
+    }
+    if (match[1] == 'on') {
+      return true;
+    }
     return false;
   }
 

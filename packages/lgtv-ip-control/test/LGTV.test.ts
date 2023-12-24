@@ -121,8 +121,11 @@ describe.each([
       await testTV.connect();
       const actual = testTV.getCurrentApp();
       await expect(mocking).resolves.not.toThrow();
-      if (expected === null) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.toBe(expected);
+      if (expected === null) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.toBe(expected);
+      }
     });
 
     it.each([
@@ -135,8 +138,11 @@ describe.each([
       await testTV.connect();
       const actual = testTV.getCurrentVolume();
       await expect(mocking).resolves.not.toThrow();
-      if (expected === null) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.toBe(expected);
+      if (expected === null) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.toBe(expected);
+      }
     });
 
     it.each([
@@ -148,8 +154,11 @@ describe.each([
       await testTV.connect();
       const actual = testTV.getMuteState();
       await expect(mocking).resolves.not.toThrow();
-      if (expected === null) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.toBe(expected);
+      if (expected === null) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.toBe(expected);
+      }
     });
 
     it.each([
@@ -160,8 +169,11 @@ describe.each([
       await testTV.connect();
       const actual = testTV.getIpControlState();
       await expect(mocking).resolves.not.toThrow();
-      if (expected === null) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.toBe(expected);
+      if (expected === null) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.toBe(expected);
+      }
     });
 
     it.each([
@@ -172,8 +184,11 @@ describe.each([
       await testTV.connect();
       const actual = testTV.powerOff();
       await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -181,12 +196,19 @@ describe.each([
       { mode: 'foobar', error: true },
     ])('sets picture mode: $mode', async ({ mode, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`PICTURE_MODE ${mode}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`PICTURE_MODE ${mode}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.setPictureMode(mode as PictureModes);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -194,12 +216,19 @@ describe.each([
       { key: 'foobar', error: true },
     ])('sends key: $key', async ({ key, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`KEY_ACTION ${key}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`KEY_ACTION ${key}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.sendKey(key as Keys);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -207,12 +236,19 @@ describe.each([
       { mode: 'foobar', error: true },
     ])('sets picture mode: $mode', async ({ mode, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`SCREEN_MUTE ${mode}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`SCREEN_MUTE ${mode}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.setScreenMute(mode as ScreenMuteModes);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -220,12 +256,19 @@ describe.each([
       { level: 'foobar', error: true },
     ])('sets energy saving level: $level', async ({ level, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`ENERGY_SAVING ${level}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`ENERGY_SAVING ${level}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.setEnergySaving(level as EnergySavingLevels);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -233,12 +276,19 @@ describe.each([
       { input: 'foobar', error: true },
     ])('sets input: $input', async ({ input, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`INPUT_SELECT ${input}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`INPUT_SELECT ${input}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.setInput(input as Inputs);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([
@@ -250,12 +300,19 @@ describe.each([
       { level: 1.5, error: true },
     ])('sets volume: $level', async ({ level, error }) => {
       let mocking: Promise<void> | null = null;
-      if (!error) mocking = mockResponse(`VOLUME_CONTROL ${level}`, 'OK');
+      if (!error) {
+        mocking = mockResponse(`VOLUME_CONTROL ${level}`, 'OK');
+      }
       await testTV.connect();
       const actual = testTV.setVolume(level);
-      if (!error) await expect(mocking).resolves.not.toThrow();
-      if (error) await expect(actual).rejects.toThrow();
-      else await expect(actual).resolves.not.toThrow();
+      if (!error) {
+        await expect(mocking).resolves.not.toThrow();
+      }
+      if (error) {
+        await expect(actual).rejects.toThrow();
+      } else {
+        await expect(actual).resolves.not.toThrow();
+      }
     });
 
     it.each([

@@ -15,7 +15,8 @@
       {
         "argsIgnorePattern": "^_\\d*$"
       }
-    ]
+    ],
+    "curly": "error"
   },
   "ignorePatterns": ["**/dist/**"]
 }
