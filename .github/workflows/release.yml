@@ -123,6 +123,9 @@ jobs:
           version: ${{ env.NEW_VERSION }}
           operation: release
 
+      - name: Format CHANGELOG.md using Prettier
+        run: yarn run prettier --write CHANGELOG.md
+
       - name: Commit CHANGELOG.md and yarn.lock changes and create tag
         run: |
           git add "CHANGELOG.md"
