@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- New `powerOnAndConnect` function on `LGTV` which will retry the connection
+  while the TV powers on.
 ### Fixed
 
 - Handle getCurrentApp response when the TV is powered off

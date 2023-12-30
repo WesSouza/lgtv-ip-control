@@ -46,8 +46,10 @@ export class LGTV {
     return this.socket.connected;
   }
 
-  async connect(): Promise<void> {
-    await this.socket.connect();
+  async connect(
+    options?: Parameters<typeof TinySocket.prototype.connect>[0],
+  ): Promise<void> {
+    await this.socket.connect(options);
   }
 
   async disconnect(): Promise<void> {
@@ -114,6 +116,16 @@ export class LGTV {
 
   powerOn() {
     this.socket.wakeOnLan();
+  }
+
+  powerOnAndConnect(
+    options?: Parameters<typeof TinySocket.prototype.connect>[0],
+  ) {
+    this.socket.wakeOnLan();
+    return this.connect({
+      maxRetries: 10,
+      ...options,
+    });
   }
 
   async sendKey(key: Keys): Promise<void> {

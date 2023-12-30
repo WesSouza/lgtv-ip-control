@@ -154,6 +154,16 @@ creating the `LGTV` instance.
 lgtv.powerOn();
 ```
 
+### `.powerOnAndConnect(): Promise<void>`
+
+Powers the TV on, using Wake On Lan, and connects to it. Requires MAC address to
+be set when creating the `LGTV` instance. Returns a promise that resolves once
+the connection is established, or rejects after a number of retries.
+
+```ts
+await lgtv.powerOnAndConnect();
+```
+
 ### `.sendKey(key: Keys): Promise<void>`
 
 Sends a `key`, as if it was pressed on the TV remote control.
