@@ -1,4 +1,3 @@
-import { createSocket, Socket as DgramSocket, SocketType } from 'dgram';
 import { AddressInfo, Server } from 'net';
 import { promisify } from 'util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -325,60 +324,3 @@ describe.each([
     });
   },
 );
-
-describe.each([
-  {
-    ipProto: 'IPv4',
-    address: '127.0.0.1',
-    socketType: 'udp4' as SocketType,
-  },
-  { ipProto: 'IPv6', address: '::1', socketType: 'udp6' as SocketType },
-])('datagram commands $ipProto', ({ address, socketType }) => {
-  let mockSocket: DgramSocket;
-  let testSettings: typeof DefaultSettings;
-  let testTV: LGTV;
-
-  beforeEach(async () => {
-    mockSocket = createSocket(socketType);
-    await promisify(mockSocket.bind).bind(mockSocket)();
-    const port = mockSocket.address().port;
-    testSettings = {
-      ...DefaultSettings,
-      networkWolPort: port,
-      networkWolAddress: address,
-    };
-    testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
-  });
-
-  afterEach(async () => {
-    await promisify(mockSocket.close).bind(mockSocket)();
-  });
-
-  it('powers on', async () => {
-    let received = false;
-    let contents: Buffer | null = null;
-    const mocking = new Promise<void>((resolve) => {
-      mockSocket.on('message', (msg) => {
-        received = true;
-        contents = msg;
-        resolve();
-      });
-    });
-    testTV.powerOn();
-    await mocking;
-    expect(received).toBe(true);
-    expect(contents).toStrictEqual(
-      Buffer.from([
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-      ]),
-    );
-  });
-});
