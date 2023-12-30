@@ -42,6 +42,10 @@ export class LGTV {
     return this.encoder.decode(response);
   }
 
+  get connected() {
+    return this.socket.connected;
+  }
+
   async connect(): Promise<void> {
     await this.socket.connect();
   }

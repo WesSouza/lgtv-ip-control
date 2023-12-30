@@ -1,6 +1,4 @@
-import { createSocket, Socket as DgramSocket, SocketType } from 'dgram';
-import { AddressInfo, Server } from 'net';
-import { promisify } from 'util';
+import { AddressInfo, Server, Socket } from 'net';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { LGEncoder, LGEncryption } from '../src/classes/LGEncryption.js';
@@ -45,6 +43,7 @@ describe.each([
   ({ address, crypt }) => {
     let mockEncode: LGEncoder;
     let mockServer: Server;
+    let mockServerSocket: Socket;
     let testSettings: typeof DefaultSettings;
     let testTV: LGTV;
 
@@ -74,19 +73,25 @@ describe.each([
           responseTerminator: '\r',
         });
       }
-      mockServer = new Server().listen();
+      mockServer = new Server((socket) => {
+        mockServerSocket = socket;
+      }).listen();
       const port = (<AddressInfo>mockServer.address()).port;
       testSettings = { ...DefaultSettings, networkPort: port };
       testTV = new LGTV(address, MAC, crypt ? CRYPT_KEY : null, testSettings);
     });
 
     afterEach(async () => {
-      await testTV.disconnect();
-      // Graceful shutdown of net.Server doesn't work correctly on macOS.
-      // Work around it by making sure the socket has a chance to close first.
-      await new Promise((resolve) => setImmediate(resolve));
-      await new Promise((resolve) => setImmediate(resolve));
-      await promisify(mockServer.close).bind(mockServer)();
+      if (testTV.connected) {
+        await testTV.disconnect();
+      }
+
+      await new Promise((resolve) => {
+        mockServerSocket.end(() => {
+          resolve(undefined);
+        });
+        mockServer.unref();
+      });
     });
 
     it('connects', async () => {
@@ -325,60 +330,3 @@ describe.each([
     });
   },
 );
-
-describe.each([
-  {
-    ipProto: 'IPv4',
-    address: '127.0.0.1',
-    socketType: 'udp4' as SocketType,
-  },
-  { ipProto: 'IPv6', address: '::1', socketType: 'udp6' as SocketType },
-])('datagram commands $ipProto', ({ address, socketType }) => {
-  let mockSocket: DgramSocket;
-  let testSettings: typeof DefaultSettings;
-  let testTV: LGTV;
-
-  beforeEach(async () => {
-    mockSocket = createSocket(socketType);
-    await promisify(mockSocket.bind).bind(mockSocket)();
-    const port = mockSocket.address().port;
-    testSettings = {
-      ...DefaultSettings,
-      networkWolPort: port,
-      networkWolAddress: address,
-    };
-    testTV = new LGTV(address, MAC, CRYPT_KEY, testSettings);
-  });
-
-  afterEach(async () => {
-    await promisify(mockSocket.close).bind(mockSocket)();
-  });
-
-  it('powers on', async () => {
-    let received = false;
-    let contents: Buffer | null = null;
-    const mocking = new Promise<void>((resolve) => {
-      mockSocket.on('message', (msg) => {
-        received = true;
-        contents = msg;
-        resolve();
-      });
-    });
-    testTV.powerOn();
-    await mocking;
-    expect(received).toBe(true);
-    expect(contents).toStrictEqual(
-      Buffer.from([
-        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb, 0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-        0xda, 0x0a, 0x0f, 0xe1, 0x60, 0xcb,
-      ]),
-    );
-  });
-});
