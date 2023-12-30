@@ -72,6 +72,10 @@ describe.each([
     );
   });
 
+  it('disconnecting a disconnected socket is a noop', async () => {
+    expect(socket.disconnect()).resolves.not.toThrow();
+  });
+
   it('reads', async () => {
     const buffer = Buffer.from('abc', 'utf-8');
 

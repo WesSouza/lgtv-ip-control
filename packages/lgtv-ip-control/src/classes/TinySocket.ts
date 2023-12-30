@@ -163,7 +163,10 @@ export class TinySocket {
   }
 
   disconnect(): Promise<void> {
-    this.#assertConnected();
+    if (!this.#isConnected()) {
+      return Promise.resolve(undefined);
+    }
+
     return this.wrap((resolve) => {
       this.#connected = false;
       this.#client.end(resolve);
