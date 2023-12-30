@@ -1,5 +1,5 @@
 import { createSocket, Socket as DgramSocket, SocketType } from 'dgram';
-import { AddressInfo, Server } from 'net';
+import { AddressInfo, Server, Socket } from 'net';
 import { promisify } from 'util';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -13,11 +13,14 @@ describe.each([
   { ipProto: 'IPv6', address: '::1' },
 ])('TinySocket using $ipProto', ({ address }) => {
   let mockServer: Server;
+  let mockServerSocket: Socket;
   let testSettings: typeof DefaultSettings;
   let socket: TinySocket;
 
   beforeEach(() => {
-    mockServer = new Server().listen();
+    mockServer = new Server((socket) => {
+      mockServerSocket = socket;
+    }).listen();
     const port = (<AddressInfo>mockServer.address()).port;
     testSettings = { ...DefaultSettings, networkPort: port };
     socket = new TinySocket(address, null, testSettings);
@@ -25,11 +28,13 @@ describe.each([
 
   afterEach(async () => {
     await socket.disconnect();
-    // Graceful shutdown of net.Server doesn't work correctly on macOS.
-    // Work around it by making sure the socket has a chance to close first.
-    await new Promise((resolve) => setImmediate(resolve));
-    await new Promise((resolve) => setImmediate(resolve));
-    await promisify(mockServer.close).bind(mockServer)();
+
+    await new Promise((resolve) => {
+      mockServerSocket.end(() => {
+        resolve(undefined);
+      });
+      mockServer.unref();
+    });
   });
 
   it('connects', async () => {

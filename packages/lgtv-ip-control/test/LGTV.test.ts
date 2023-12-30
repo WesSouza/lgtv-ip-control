@@ -1,5 +1,4 @@
-import { AddressInfo, Server } from 'net';
-import { promisify } from 'util';
+import { AddressInfo, Server, Socket } from 'net';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { LGEncoder, LGEncryption } from '../src/classes/LGEncryption.js';
@@ -44,6 +43,7 @@ describe.each([
   ({ address, crypt }) => {
     let mockEncode: LGEncoder;
     let mockServer: Server;
+    let mockServerSocket: Socket;
     let testSettings: typeof DefaultSettings;
     let testTV: LGTV;
 
@@ -73,7 +73,9 @@ describe.each([
           responseTerminator: '\r',
         });
       }
-      mockServer = new Server().listen();
+      mockServer = new Server((socket) => {
+        mockServerSocket = socket;
+      }).listen();
       const port = (<AddressInfo>mockServer.address()).port;
       testSettings = { ...DefaultSettings, networkPort: port };
       testTV = new LGTV(address, MAC, crypt ? CRYPT_KEY : null, testSettings);
@@ -81,11 +83,13 @@ describe.each([
 
     afterEach(async () => {
       await testTV.disconnect();
-      // Graceful shutdown of net.Server doesn't work correctly on macOS.
-      // Work around it by making sure the socket has a chance to close first.
-      await new Promise((resolve) => setImmediate(resolve));
-      await new Promise((resolve) => setImmediate(resolve));
-      await promisify(mockServer.close).bind(mockServer)();
+
+      await new Promise((resolve) => {
+        mockServerSocket.end(() => {
+          resolve(undefined);
+        });
+        mockServer.unref();
+      });
     });
 
     it('connects', async () => {
