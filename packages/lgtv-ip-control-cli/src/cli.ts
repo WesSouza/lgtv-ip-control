@@ -42,12 +42,24 @@ function rangeInt(min: number, max: number) {
 export function makeProgram() {
   function wrapTVAction<A extends unknown[], R>(
     action: (tv: LGTV, ...args: A) => Promise<R>,
+    wrapOptions: { connectBefore?: boolean; disconnectAfter?: boolean } = {},
   ) {
+    const { connectBefore = true, disconnectAfter = true } = wrapOptions;
     return async (...args: A): Promise<R> => {
       try {
         const opts = program.opts();
         const tv = new LGTV(opts.host, opts.mac ?? null, opts.keycode);
-        return await action(tv, ...args);
+        if (connectBefore) {
+          await tv.connect();
+        }
+
+        const actionResult = await action(tv, ...args);
+
+        if (disconnectAfter) {
+          await tv.disconnect();
+        }
+
+        return actionResult;
       } catch (err) {
         if (err instanceof Error) {
           program.error(err.message);
@@ -59,20 +71,25 @@ export function makeProgram() {
 
   const power = createCommand('power', 'Turn TV on or off.')
     .addArgument(new Argument('<state>', 'Power state.').choices(['on', 'off']))
-    .action(
-      wrapTVAction(async (tv, state) => {
-        switch (state) {
-          case 'on':
-            await tv.powerOn();
-            break;
-          case 'off':
-            await tv.connect();
+    .action((state) => {
+      switch (state) {
+        case 'on':
+          return wrapTVAction(
+            async (tv) => {
+              await tv.powerOnAndConnect();
+            },
+            { connectBefore: false },
+          )();
+
+        case 'off':
+          return wrapTVAction(async (tv) => {
             await tv.powerOff();
-            await tv.disconnect();
-            break;
-        }
-      }),
-    );
+          })();
+
+        default:
+          throw new Error(`Invalid power state "${state}"`);
+      }
+    });
 
   const volume = createCommand('volume', 'Set the volume level.')
     .addArgument(
@@ -83,13 +100,11 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, level) => {
-        await tv.connect();
         if (level === undefined) {
           process.stdout.write(String(await tv.getCurrentVolume()) + '\n');
         } else {
           await tv.setVolume(level);
         }
-        await tv.disconnect();
       }),
     );
 
@@ -102,7 +117,6 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, state) => {
-        await tv.connect();
         switch (state) {
           case 'on':
             await tv.setVolumeMute(true);
@@ -114,7 +128,6 @@ export function makeProgram() {
             process.stdout.write((await tv.getMuteState()) ? 'on\n' : 'off\n');
             break;
         }
-        await tv.disconnect();
       }),
     );
 
@@ -126,9 +139,7 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, input) => {
-        await tv.connect();
         await tv.setInput(Inputs[input as keyof typeof Inputs]);
-        await tv.disconnect();
       }),
     );
 
@@ -143,11 +154,9 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, level) => {
-        await tv.connect();
         await tv.setEnergySaving(
           EnergySavingLevels[level as keyof typeof EnergySavingLevels],
         );
-        await tv.disconnect();
       }),
     );
 
@@ -169,7 +178,6 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, keys, options) => {
-        await tv.connect();
         for (const pressed of keys) {
           switch (pressed) {
             case 'pause':
@@ -182,7 +190,6 @@ export function makeProgram() {
               break;
           }
         }
-        await tv.disconnect();
       }),
     );
 
@@ -194,9 +201,7 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, iface) => {
-        await tv.connect();
         process.stdout.write((await tv.getMacAddress(iface)) + '\n');
-        await tv.disconnect();
       }),
     );
 
@@ -208,11 +213,9 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, mode) => {
-        await tv.connect();
         await tv.setPictureMode(
           PictureModes[mode as keyof typeof PictureModes],
         );
-        await tv.disconnect();
       }),
     );
 
@@ -227,11 +230,9 @@ export function makeProgram() {
     )
     .action(
       wrapTVAction(async (tv, mode) => {
-        await tv.connect();
         await tv.setScreenMute(
           ScreenMuteModes[mode as keyof typeof ScreenMuteModes],
         );
-        await tv.disconnect();
       }),
     );
 
