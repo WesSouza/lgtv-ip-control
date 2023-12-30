@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   while the TV powers on.
 - Improvements to TinySocket connection handling and tests.
 
+### Changed
+
+- CLI `power on` now waits until the TV can receive commands.
+
 ### Fixed
 
 - Handle getCurrentApp response when the TV is powered off.

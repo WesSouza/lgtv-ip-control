@@ -32,8 +32,8 @@ describe('commands', () => {
 
   it('powers on', async () => {
     const spy = vi
-      .spyOn(LGTV.prototype, 'powerOn')
-      .mockImplementation(() => {});
+      .spyOn(LGTV.prototype, 'powerOnAndConnect')
+      .mockResolvedValue(undefined);
     await program.parseAsync([...commonOptions, 'power', 'on']);
     expect(spy).toHaveBeenCalledTimes(1);
   });
