@@ -16,7 +16,9 @@ jobs:
         node: ['18.x', '20.x']
         os:
           - ubuntu-latest
-          - macOS-latest
+          # Building on macOS sometimes never exits even being successful,
+          # causing actions to hang for hours and then failing (#116).
+          # - macOS-latest
 
     steps:
       - name: Checkout repo
