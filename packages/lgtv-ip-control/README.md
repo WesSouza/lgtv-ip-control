@@ -1,3 +1,18 @@
+# LG TV IP Control
+
+<a href="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml"><img src="https://github.com/WesSouza/lgtv-ip-control/actions/workflows/lint-typecheck-test-build.yml/badge.svg" alt="Lint, Type Check, Test, Build"></a>
+
+<a href="https://www.npmjs.com/package/lgtv-ip-control"><img src="https://img.shields.io/npm/v/lgtv-ip-control" alt="npm version badge"></a>
+
+This is a JS library that implements TCP network control for LG TVs manufactured
+since 2018. It utilizes encryption rules based on a guide found on the internet.
+A non-encrypted mode is provided for older models, but hasn't been tested.
+
+This library is not provided by LG, and it is not a complete implementation
+for every TV model.
+
+Check compatibility and TV setup instructions on the [root's README.md](../../README.md).
+
 ### Requirements
 
 - Node 16+ (at least ES2017)
@@ -9,8 +24,6 @@
 # Using NPM
 npm install lgtv-ip-control
 
-# Using NPM, but excluding the CLI
-npm install --no-optional lgtv-ip-control
 
 # Using Yarn
 yarn add lgtv-ip-control
