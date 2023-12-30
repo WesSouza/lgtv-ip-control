@@ -1,12 +1,59 @@
 import { createSocket, Socket as DgramSocket, SocketType } from 'dgram';
 import { AddressInfo, Server, Socket } from 'net';
 import { promisify } from 'util';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DefaultSettings } from '../src/constants/DefaultSettings.js';
 import { TinySocket } from '../src/classes/TinySocket.js';
 
 const MAC = 'DA:0A:0F:E1:60:CB';
+
+describe('reconnection test', () => {
+  const address = '127.0.0.1';
+  let mockServerSocket: Socket;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('reconnects after retries', async () => {
+    const maxRetries = 5;
+    const retryTimeout = 10000;
+    const port = 10000 + Math.floor(Math.random() * 55535);
+
+    const socket = new TinySocket(address, null, {
+      ...DefaultSettings,
+      networkPort: port,
+    });
+
+    socket.connect({
+      maxRetries,
+      retryTimeout,
+    });
+
+    for (let i = 0; i < maxRetries - 1; i++) {
+      expect(socket.connected).toBe(false);
+      await vi.advanceTimersByTimeAsync(retryTimeout);
+    }
+
+    const mockServer = new Server((socket) => {
+      mockServerSocket = socket;
+    }).listen(port);
+
+    await vi.waitUntil(() => socket.connected);
+
+    await new Promise((resolve) => {
+      mockServerSocket.end(() => {
+        resolve(undefined);
+      });
+      mockServer.unref();
+    });
+  });
+});
 
 describe.each([
   { ipProto: 'IPv4', address: '127.0.0.1' },

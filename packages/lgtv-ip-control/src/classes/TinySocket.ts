@@ -48,6 +48,8 @@ function assertSettings(settings: SocketSettings) {
   );
 }
 
+export class MaxRetriesError extends Error {}
+
 export class TimeoutError extends Error {}
 
 export class TinySocket {
@@ -117,8 +119,51 @@ export class TinySocket {
     });
   }
 
-  async connect(): Promise<void> {
+  async connect(
+    options: {
+      maxRetries?: number;
+      retryTimeout?: number;
+    } = {},
+  ): Promise<void> {
     this.#assertDisconnected();
+
+    const { maxRetries = 0, retryTimeout = 750 } = options;
+    if (maxRetries > 0) {
+      return new Promise((resolve, reject) => {
+        let retries = 0;
+
+        const connect = (error?: Error) => {
+          this.#client.removeAllListeners();
+          this.#client.destroy();
+          this.#client = new Socket();
+
+          if (retries >= maxRetries) {
+            const maxRetriesError = new MaxRetriesError(
+              `maximum retries of ${retries} reached`,
+            );
+            maxRetriesError.cause = error;
+            reject(maxRetriesError);
+            return;
+          }
+
+          this.#client.setTimeout(retryTimeout);
+          this.#client.connect(this.settings.networkPort, this.host);
+          this.#client.on('error', connect);
+          this.#client.on('timeout', connect);
+          this.#client.on('connect', connected);
+          retries++;
+        };
+
+        const connected = () => {
+          this.#client.removeAllListeners();
+          this.#client.setTimeout(this.settings.networkTimeout);
+          this.#connected = true;
+          resolve(undefined);
+        };
+
+        connect();
+      });
+    }
 
     await this.wrap<undefined>((resolve) => {
       this.#client.setTimeout(this.settings.networkTimeout);
