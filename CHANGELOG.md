@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.1.0 - 2023-12-30
+
 ### Added
 
 - New `powerOnAndConnect` function on `LGTV` which will retry the connection
