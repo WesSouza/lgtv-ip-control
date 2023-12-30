@@ -51,7 +51,8 @@ function assertSettings(settings: SocketSettings) {
 export class TimeoutError extends Error {}
 
 export class TinySocket {
-  private client = new Socket();
+  #client = new Socket();
+  #connected = false;
 
   constructor(
     private host: string,
@@ -65,6 +66,24 @@ export class TinySocket {
     );
   }
 
+  #isConnected() {
+    return (
+      this.#connected && !this.#client.connecting && !this.#client.destroyed
+    );
+  }
+
+  #assertConnected() {
+    assert(this.#isConnected(), 'should be connected');
+  }
+
+  #assertDisconnected() {
+    assert(!this.#isConnected(), 'should not be connected');
+  }
+
+  get connected() {
+    return this.#isConnected();
+  }
+
   wrap<T>(
     method: (
       resolve: (value: T) => void,
@@ -73,16 +92,17 @@ export class TinySocket {
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       const handleTimeout = () => {
-        this.client.end();
+        this.#connected = false;
+        this.#client.end();
         reject(new TimeoutError());
       };
       const cleanup = () => {
-        this.client.removeListener('error', reject);
-        this.client.removeListener('timeout', handleTimeout);
+        this.#client.removeListener('error', reject);
+        this.#client.removeListener('timeout', handleTimeout);
       };
 
-      this.client.once('error', reject);
-      this.client.once('timeout', handleTimeout);
+      this.#client.once('error', reject);
+      this.#client.once('timeout', handleTimeout);
 
       method(
         (value: T) => {
@@ -97,22 +117,35 @@ export class TinySocket {
     });
   }
 
-  connect(): Promise<void> {
-    return this.wrap((resolve) => {
-      this.client.setTimeout(this.settings.networkTimeout);
-      this.client.connect(this.settings.networkPort, this.host, resolve);
+  async connect(): Promise<void> {
+    this.#assertDisconnected();
+
+    await this.wrap<undefined>((resolve) => {
+      this.#client.setTimeout(this.settings.networkTimeout);
+      try {
+        this.#client.connect(this.settings.networkPort, this.host, () =>
+          resolve(undefined),
+        );
+        this.#connected = true;
+      } catch (e) {
+        console.error(e);
+      }
     });
   }
 
   read(): Promise<Buffer> {
+    this.#assertConnected();
+
     return this.wrap((resolve) => {
-      this.client.once('data', resolve);
+      this.#client.once('data', resolve);
     });
   }
 
   write(data: Buffer): Promise<void> {
+    this.#assertConnected();
+
     return this.wrap((resolve, reject) => {
-      this.client.write(data, (error?: Error) => {
+      this.#client.write(data, (error?: Error) => {
         if (error) {
           reject(error);
         } else {
@@ -123,13 +156,17 @@ export class TinySocket {
   }
 
   async sendReceive(data: Buffer): Promise<Buffer> {
+    this.#assertConnected();
+
     await this.write(data);
     return this.read();
   }
 
   disconnect(): Promise<void> {
+    this.#assertConnected();
     return this.wrap((resolve) => {
-      this.client.end(resolve);
+      this.#connected = false;
+      this.#client.end(resolve);
     });
   }
 

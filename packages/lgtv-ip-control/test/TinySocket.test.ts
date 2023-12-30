@@ -27,7 +27,9 @@ describe.each([
   });
 
   afterEach(async () => {
-    await socket.disconnect();
+    if (socket.connected) {
+      await socket.disconnect();
+    }
 
     await new Promise((resolve) => {
       mockServerSocket.end(() => {
@@ -58,6 +60,16 @@ describe.each([
     await socket.connect();
     await socket.disconnect();
     await expect(mocking).resolves.not.toThrow();
+  });
+
+  it('throws when already connected', async () => {
+    await socket.connect();
+
+    expect(socket.connect()).rejects.toEqual(
+      expect.objectContaining({
+        message: 'should not be connected',
+      }),
+    );
   });
 
   it('reads', async () => {

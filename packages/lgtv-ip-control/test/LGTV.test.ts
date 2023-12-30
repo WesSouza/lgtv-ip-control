@@ -82,7 +82,9 @@ describe.each([
     });
 
     afterEach(async () => {
-      await testTV.disconnect();
+      if (testTV.connected) {
+        await testTV.disconnect();
+      }
 
       await new Promise((resolve) => {
         mockServerSocket.end(() => {
