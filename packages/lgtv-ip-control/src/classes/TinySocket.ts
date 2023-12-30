@@ -122,14 +122,10 @@ export class TinySocket {
 
     await this.wrap<undefined>((resolve) => {
       this.#client.setTimeout(this.settings.networkTimeout);
-      try {
-        this.#client.connect(this.settings.networkPort, this.host, () =>
-          resolve(undefined),
-        );
-        this.#connected = true;
-      } catch (e) {
-        console.error(e);
-      }
+      this.#client.connect(this.settings.networkPort, this.host, () => {
+        resolve(undefined);
+      });
+      this.#connected = true;
     });
   }
 
