@@ -26,6 +26,9 @@
     "test:watch": "vitest watch -c ../../.config/vite.config.mts",
     "test": "vitest run -c ../../.config/vite.config.mts"
   },
+  "dependencies": {
+    "tslib": "^2.6.2"
+  },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.10.5",
@@ -35,7 +38,6 @@
     "rollup": "^4.9.1",
     "rollup-plugin-esbuild": "^6.1.0",
     "ts-node-dev": "^2.0.0",
-    "tslib": "^2.6.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
     "vitest": "^1.1.0"
