@@ -33,20 +33,26 @@ yarn add lgtv-ip-control
 
 Here's a very basic example of how to control the TV:
 
-```ts
-import { LGTV } from 'lgtv-ip-control';
+```js
+import { Inputs, LGTV } from 'lgtv-ip-control';
 
-const tv = new LGTV('192.168.1.100', '1a:2b:3c:4d:5e:6f', 'KEY1C0DE');
+const lgtv = new LGTV('192.168.1.100', '1a:2b:3c:4d:5e:6f', 'KEY1C0DE');
 
-tv.connect()
+lgtv
+  .connect()
   .then(async () => {
+    console.log('Disconnect now');
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     console.log('Unmutting...');
-    await tv.setVolumeMute(false);
-    console.log('Setting volume to 15...');
-    await tv.setVolume(50);
+    await lgtv.setVolumeMute(false);
+    console.log('Select HDMI1 input...');
+    await lgtv.setInput(Inputs.hdmi1);
     console.log('Done!');
   })
-  .catch(console.error);
+  // Log any errors
+  .catch(console.error)
+  // Tries disconnecting once done
+  .finally(() => lgtv.disconnect());
 ```
 
 To use `import`, you need to make sure to save the file as `.mjs` or to specify `"type": "module"` on your `package.json`. [Learn more about Node.js' support for ESM.](https://nodejs.org/api/esm.html)
@@ -54,14 +60,14 @@ To use `import`, you need to make sure to save the file as `.mjs` or to specify 
 Otherwise replace the first line with:
 
 ```js
-const { LGTV } = require('lgtv-ip-control');
+const { Inputs, LGTV } = require('lgtv-ip-control');
 ```
 
 ### `new LGTV()`
 
 Returns a new instance to control a TV.
 
-```ts
+```js
 const lgtv = new LGTV(
   /**
    * TV IP Address
@@ -96,7 +102,7 @@ Connects to the TV using TCP.
 
 Required before sending any commands.
 
-```ts
+```js
 await lgtv.connect();
 ```
 
@@ -104,7 +110,7 @@ await lgtv.connect();
 
 Disconnects from the TV.
 
-```ts
+```js
 await lgtv.disconnect();
 ```
 
@@ -114,7 +120,7 @@ Gets the current app. May be one of the `Apps` enum or an arbitrary string if
 the app type is unknown. Might return `null` if the TV is powered off but still
 responding.
 
-```ts
+```js
 const currentApp = await lgtv.getCurrentApp();
 ```
 
@@ -122,7 +128,7 @@ const currentApp = await lgtv.getCurrentApp();
 
 Gets the current volume as an integer from `0` to `100`.
 
-```ts
+```js
 const currentVolume = await lgtv.getCurrentVolume();
 ```
 
@@ -130,7 +136,7 @@ const currentVolume = await lgtv.getCurrentVolume();
 
 Gets the ip control state.
 
-```ts
+```js
 const ipControlState = await lgtv.getIpControlState();
 ```
 
@@ -138,7 +144,7 @@ const ipControlState = await lgtv.getIpControlState();
 
 Gets the MAC address by network interface.
 
-```ts
+```js
 const macAddress = await lgtv.getMacAddress('wired');
 ```
 
@@ -146,7 +152,7 @@ const macAddress = await lgtv.getMacAddress('wired');
 
 Gets the mute state.
 
-```ts
+```js
 const muteState = await lgtv.getMuteState();
 ```
 
@@ -154,7 +160,7 @@ const muteState = await lgtv.getMuteState();
 
 Powers the TV off.
 
-```ts
+```js
 await lgtv.powerOff();
 ```
 
@@ -163,7 +169,7 @@ await lgtv.powerOff();
 Powers the TV on, using Wake On Lan. Requires MAC address to be set when
 creating the `LGTV` instance.
 
-```ts
+```js
 lgtv.powerOn();
 ```
 
@@ -173,7 +179,7 @@ Powers the TV on, using Wake On Lan, and connects to it. Requires MAC address to
 be set when creating the `LGTV` instance. Returns a promise that resolves once
 the connection is established, or rejects after a number of retries.
 
-```ts
+```js
 await lgtv.powerOnAndConnect();
 ```
 
@@ -181,7 +187,7 @@ await lgtv.powerOnAndConnect();
 
 Sends a `key`, as if it was pressed on the TV remote control.
 
-```ts
+```js
 await lgtv.sendKey(Keys.menu);
 ```
 
@@ -192,7 +198,7 @@ See [`Keys`](#Keys) for available keys.
 Sets the current energy saving level. Note that `screenOff` is known not to
 work for some models.
 
-```ts
+```js
 await lgtv.setEnergySaving(EnergySavingLevels.maximum);
 ```
 
@@ -202,7 +208,7 @@ See [`EnergySavingLevels`](#EnergySavingLevels) for available levels.
 
 Sets the current TV input.
 
-```ts
+```js
 await lgtv.setInput(Inputs.hdmi1);
 ```
 
@@ -212,7 +218,7 @@ See [`Inputs`](#Inputs) for available inputs.
 
 Sets the volume level as an integer from `0` to `100`.
 
-```ts
+```js
 await lgtv.setVolume(15);
 ```
 
@@ -220,7 +226,7 @@ await lgtv.setVolume(15);
 
 Sets the volume mute state.
 
-```ts
+```js
 await lgtv.setVolumeMute(false);
 ```
 
@@ -230,7 +236,7 @@ Sets the current screen mute mode. This can be used to either completely blank
 the screen or just blank the video feed while leaving the OSD visible.
 Returns a promise.
 
-```ts
+```js
 await lgtv.setScreenMute(ScreenMuteModes.screenmuteon);
 ```
 
