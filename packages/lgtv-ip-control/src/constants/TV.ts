@@ -96,6 +96,12 @@ export enum PictureModes {
   vivid = 'vivid',
 }
 
+export enum PowerStates {
+  on = 'on',
+  off = 'off',
+  unknown = 'unknown',
+}
+
 export enum ScreenMuteModes {
   screenMuteOn = 'screenmuteon',
   videoMuteOn = 'videomuteon',

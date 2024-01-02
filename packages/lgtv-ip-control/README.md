@@ -156,6 +156,19 @@ Gets the mute state.
 const muteState = await lgtv.getMuteState();
 ```
 
+### `.getPowerState(): Promise<PowerStates>`
+
+Gets the current TV power state.
+
+Because the TV might be offline, you should call this function before calling
+`.connect()`, otherwise you can get a `TimeoutError`.
+
+```js
+const powerState = await lgtv.getPowerState();
+```
+
+See [`PowerStates`](#PowerStates) for available states.
+
 ### `.powerOff(): Promise<void>`
 
 Powers the TV off.
@@ -318,6 +331,14 @@ See [`ScreenMuteModes`](#ScreenMuteModes) for available modes.
 | volumeMute      | Mute Toggle          |
 | volumeUp        | Volume Up            |
 | yellowButton    | Yellow Button        |
+
+### PowerStates
+
+| Key     | State                                        |
+| ------- | -------------------------------------------- |
+| on      | The TV is on and responding to connections   |
+| off     | The TV is off or powering off                |
+| unknown | The state of the TV is unknown, possibly off |
 
 ### ScreenMuteModes
 

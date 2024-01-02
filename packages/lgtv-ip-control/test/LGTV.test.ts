@@ -10,9 +10,11 @@ import {
   Inputs,
   Keys,
   PictureModes,
+  PowerStates,
   ScreenMuteModes,
 } from '../src/constants/TV.js';
 
+const NULL_IP = '0.0.0.0';
 const CRYPT_KEY = 'M9N0AZ62';
 const MAC = 'DA:0A:0F:E1:60:CB';
 
@@ -77,7 +79,11 @@ describe.each([
         mockServerSocket = socket;
       }).listen();
       const port = (<AddressInfo>mockServer.address()).port;
-      testSettings = { ...DefaultSettings, networkPort: port };
+      testSettings = {
+        ...DefaultSettings,
+        networkPort: port,
+        networkTimeout: 50,
+      };
       testTV = new LGTV(address, MAC, crypt ? CRYPT_KEY : null, testSettings);
     });
 
@@ -177,6 +183,33 @@ describe.each([
       } else {
         await expect(actual).resolves.toBe(expected);
       }
+    });
+
+    it.each([{ powerState: PowerStates.on }, { powerState: PowerStates.off }])(
+      'gets the TV power state when connected: $powerState',
+      async ({ powerState }) => {
+        const mocking = mockResponse(
+          'CURRENT_APP',
+          powerState === PowerStates.on ? 'APP:ANYTHING' : '',
+        );
+        await testTV.connect();
+        const actual = testTV.getPowerState();
+        await expect(mocking).resolves.not.toThrow();
+        await expect(actual).resolves.toBe(powerState);
+      },
+    );
+
+    it('gets "unknown" TV power state when disconnected', async () => {
+      const offlineTV = new LGTV(
+        NULL_IP,
+        MAC,
+        crypt ? CRYPT_KEY : null,
+        testSettings,
+      );
+
+      await expect(offlineTV.getPowerState()).resolves.toBe(
+        PowerStates.unknown,
+      );
     });
 
     it.each([
