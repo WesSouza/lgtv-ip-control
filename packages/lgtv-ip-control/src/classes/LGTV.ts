@@ -52,8 +52,8 @@ export class LGTV {
     await this.socket.connect(options);
   }
 
-  async disconnect(): Promise<void> {
-    await this.socket.disconnect();
+  disconnect() {
+    this.socket.disconnect();
   }
 
   async getCurrentApp(): Promise<Apps | string | null> {
