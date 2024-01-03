@@ -7,10 +7,11 @@ import {
   Inputs,
   Keys,
   PictureModes,
+  PowerStates,
   ScreenMuteModes,
 } from '../constants/TV.js';
 import { LGEncoder, LGEncryption } from './LGEncryption.js';
-import { TinySocket } from './TinySocket.js';
+import { TimeoutError, TinySocket } from './TinySocket.js';
 
 export class ResponseParseError extends Error {}
 
@@ -52,8 +53,8 @@ export class LGTV {
     await this.socket.connect(options);
   }
 
-  async disconnect(): Promise<void> {
-    await this.socket.disconnect();
+  disconnect() {
+    this.socket.disconnect();
   }
 
   async getCurrentApp(): Promise<Apps | string | null> {
@@ -99,6 +100,30 @@ export class LGTV {
       return true;
     }
     return false;
+  }
+
+  async getPowerState(): Promise<PowerStates> {
+    const testPowerState = async () => {
+      const currentApp = await this.getCurrentApp();
+      return currentApp === null ? PowerStates.off : PowerStates.on;
+    };
+
+    if (this.connected) {
+      return testPowerState();
+    }
+
+    try {
+      await this.connect();
+      return await testPowerState();
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        return PowerStates.unknown;
+      } else {
+        throw error;
+      }
+    } finally {
+      this.disconnect();
+    }
   }
 
   async powerOff(): Promise<void> {
