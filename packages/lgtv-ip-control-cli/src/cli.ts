@@ -56,7 +56,7 @@ export function makeProgram() {
         const actionResult = await action(tv, ...args);
 
         if (disconnectAfter) {
-          await tv.disconnect();
+          tv.disconnect();
         }
 
         return actionResult;
