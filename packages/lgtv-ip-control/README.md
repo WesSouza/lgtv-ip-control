@@ -106,12 +106,12 @@ Required before sending any commands.
 await lgtv.connect();
 ```
 
-### `.disconnect(): Promise<void>`
+### `.disconnect(): void`
 
 Disconnects from the TV.
 
 ```js
-await lgtv.disconnect();
+lgtv.disconnect();
 ```
 
 ### `.getCurrentApp(): Promise<Apps | string | null>`
