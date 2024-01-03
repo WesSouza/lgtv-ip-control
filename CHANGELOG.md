@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 4.2.0 - 2024-01-03
+
 ### Added
 
 - New `getPowerState` function on `LGTV` allowing testing if the TV is on, off,

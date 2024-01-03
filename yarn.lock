@@ -1778,20 +1778,22 @@ levn@^0.4.1:
     type-check "~0.4.0"
 
 "lgtv-ip-control-cli@file:/home/runner/work/lgtv-ip-control/lgtv-ip-control/packages/lgtv-ip-control-cli":
-  version "4.1.1"
+  version "4.2.0"
   resolved "file:packages/lgtv-ip-control-cli"
   dependencies:
     "@commander-js/extra-typings" "^9.4.1"
     commander "^9.4.1"
-    lgtv-ip-control "4.1.0"
+    lgtv-ip-control "4.1.1"
 
-lgtv-ip-control@4.1.1:
-  version "4.1.0"
-  resolved "https://registry.npmjs.org/lgtv-ip-control/-/lgtv-ip-control-4.1.0.tgz"
-  integrity sha512-lNbWBVLqxr4DeHMKa00TCbN1dXK3jM45nyAA8UFQeiTeyz/fcOum7cEWnfQ0UhGpRL7mDSP4YUTQrxkLStsMwA==
+lgtv-ip-control@4.2.0:
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/lgtv-ip-control/-/lgtv-ip-control-4.1.1.tgz"
+  integrity sha512-lT7P8VMpTlSBNHNr0bB1MLc4tu+wnsLUQZ44L7W+S6PPk59tntADK+ftAc6V0hKhfJwqKt7eUFzOWJ6giy5QNA==
+  dependencies:
+    tslib "^2.6.2"
 
 "lgtv-ip-control@file:/home/runner/work/lgtv-ip-control/lgtv-ip-control/packages/lgtv-ip-control":
-  version "4.1.1"
+  version "4.2.0"
   resolved "file:packages/lgtv-ip-control"
   dependencies:
     tslib "^2.6.2"
