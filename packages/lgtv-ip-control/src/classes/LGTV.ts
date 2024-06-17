@@ -139,14 +139,30 @@ export class LGTV {
     throwIfNotOK(await this.sendCommand(`PICTURE_MODE ${mode}`));
   }
 
-  powerOn() {
-    this.socket.wakeOnLan();
+  async powerOn(): Promise<void> {
+    try {
+      throwIfNotOK(await this.sendCommand(`POWER on`));
+    } catch (error) {
+      if (error instanceof ResponseParseError) {
+        this.socket.wakeOnLan();
+      } else {
+        throw error;
+      }
+    }
   }
 
-  powerOnAndConnect(
+  async powerOnAndConnect(
     options?: Parameters<typeof TinySocket.prototype.connect>[0],
-  ) {
-    this.socket.wakeOnLan();
+  ): Promise<void> {
+    try {
+      throwIfNotOK(await this.sendCommand(`POWER on`));
+    } catch (error) {
+      if (error instanceof ResponseParseError) {
+        this.socket.wakeOnLan();
+      } else {
+        throw error;
+      }
+    }
     return this.connect({
       maxRetries: 10,
       ...options,
