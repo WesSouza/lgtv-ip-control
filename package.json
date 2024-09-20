@@ -25,9 +25,9 @@
     "@typescript-eslint/parser": "^6.15.0",
     "eslint": "^8.56.0",
     "import-sort-style-wes": "^3.0.2",
-    "prettier": "3.1.1",
+    "prettier": "3.3.3",
     "prettier-plugin-import-sort": "^0.0.7",
-    "typescript": "^5.3.3"
+    "typescript": "^5.6.2"
   },
   "importSort": {
     ".js, .jsx": {
