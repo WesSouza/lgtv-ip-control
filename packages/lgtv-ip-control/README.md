@@ -124,6 +124,17 @@ responding.
 const currentApp = await lgtv.getCurrentApp();
 ```
 
+### `.getCurrentAppDetails(): Promise<AppDetails | null>`
+
+Gets the current app details as an object. Might include the current app, HDCP
+status, HDCP version, etc. Please note that `signal` seems to always be `true`,
+even if no device is connected. Might return `null` if the TV is powered off but
+still responding.
+
+```js
+const currentAppDetails = await lgtv.getCurrentAppDetails();
+```
+
 ### `.getCurrentVolume(): Promise<number>`
 
 Gets the current volume as an integer from `0` to `100`.

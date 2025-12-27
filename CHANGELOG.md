@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added `getCurrentAppDetails` with additional information returned for HDMI
+  inputs.
+
+### Fixed
+
+- Updated `getCurrentApp` to work for HDMI inputs on newer webOS versions that
+  return additional information.
+
 ## 4.3.0 - 2024-09-20
 
 ## 4.2.0 - 2024-01-03

@@ -10,6 +10,7 @@ import {
   PowerStates,
   ScreenMuteModes,
 } from '../constants/TV.js';
+import { AppDetails } from '../types.js';
 import { LGEncoder, LGEncryption } from './LGEncryption.js';
 import { TimeoutError, TinySocket } from './TinySocket.js';
 
@@ -58,15 +59,31 @@ export class LGTV {
   }
 
   async getCurrentApp(): Promise<Apps | string | null> {
+    const appDetails = await this.getCurrentAppDetails();
+    return appDetails?.app ?? null;
+  }
+
+  async getCurrentAppDetails(): Promise<AppDetails | null> {
     const response = await this.sendCommand('CURRENT_APP');
     if (response === '') {
       return null;
     }
-    const match = response.match(/^APP:([\w.]+)$/);
-    if (!match) {
+
+    const pairs: Record<string, string> = {};
+    for (const match of response.matchAll(/([\w\s]+):(\S+)/g)) {
+      pairs[match[1].trim()] = match[2];
+    }
+    if (!pairs['APP']) {
       throw new ResponseParseError(`failed to parse response: ${response}`);
     }
-    return match[1];
+
+    return {
+      app: pairs['APP'],
+      hotPlug: pairs['Hot plug'],
+      signal: pairs['Signal'] ? pairs['Signal'] === 'Yes' : undefined,
+      hdcpVersion: pairs['HDCP'],
+      hdcpStatus: pairs['HDCP Status'],
+    };
   }
 
   async getCurrentVolume(): Promise<number> {

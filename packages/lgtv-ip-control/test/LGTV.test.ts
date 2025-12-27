@@ -128,6 +128,16 @@ describe.each([
       { response: 'APP:youtube.leanback.v4', expected: Apps.youtube },
       { response: 'APP:com.hbo.hbomax', expected: Apps.hbomax },
       { response: 'APP:netflix', expected: Apps.netflix },
+      {
+        response:
+          'APP:com.webos.app.hdmi1 Hot plug:Connected Signal:Yes HDCP:1.4 HDCP Status:None',
+        expected: 'com.webos.app.hdmi1',
+      },
+      {
+        response:
+          'APP:com.webos.app.hdmi4 Hot plug:Connected Signal:Yes HDCP:2.2 HDCP Status:Authenticated',
+        expected: 'com.webos.app.hdmi4',
+      },
       { response: 'APP:unsupported', expected: 'unsupported' },
     ])('gets current app: $response', async ({ response, expected }) => {
       const mocking = mockResponse('CURRENT_APP', response);
@@ -136,6 +146,51 @@ describe.each([
       await expect(mocking).resolves.not.toThrow();
       await expect(actual).resolves.toBe(expected);
     });
+
+    it.each([
+      { response: '', expected: null },
+      {
+        response:
+          'APP:com.webos.app.hdmi1 Hot plug:Connected Signal:Yes HDCP:1.4 HDCP Status:None',
+        expected: {
+          app: 'com.webos.app.hdmi1',
+          hotPlug: 'Connected',
+          signal: true,
+          hdcpVersion: '1.4',
+          hdcpStatus: 'None',
+        },
+      },
+      {
+        response:
+          'APP:com.webos.app.hdmi4 Hot plug:Connected Signal:Yes HDCP:2.2 HDCP Status:Authenticated',
+        expected: {
+          app: 'com.webos.app.hdmi4',
+          hotPlug: 'Connected',
+          signal: true,
+          hdcpVersion: '2.2',
+          hdcpStatus: 'Authenticated',
+        },
+      },
+      {
+        response: 'APP:unsupported',
+        expected: {
+          app: 'unsupported',
+          hotPlug: undefined,
+          signal: undefined,
+          hdcpVersion: undefined,
+          hdcpStatus: undefined,
+        },
+      },
+    ])(
+      'gets current app details: $response',
+      async ({ response, expected }) => {
+        const mocking = mockResponse('CURRENT_APP', response);
+        await testTV.connect();
+        const actual = testTV.getCurrentAppDetails();
+        await expect(mocking).resolves.not.toThrow();
+        await expect(actual).resolves.toEqual(expected);
+      },
+    );
 
     it.each([
       { response: 'VOL:0', expected: 0 },
