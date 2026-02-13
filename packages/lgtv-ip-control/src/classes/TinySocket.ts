@@ -157,7 +157,9 @@ export class TinySocket {
 
           this.#client.setTimeout(retryTimeout);
           this.#client.connect(this.settings.networkPort, this.host);
-          this.#client.on('error', connect);
+          this.#client.on('error', (error) => {
+            setTimeout(connect, retryTimeout);
+          });
           this.#client.on('timeout', connect);
           this.#client.on('connect', connected);
           retries++;
