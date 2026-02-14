@@ -210,4 +210,10 @@ export class LGTV {
       await this.sendCommand(`VOLUME_MUTE ${isMuted ? 'on' : 'off'}`),
     );
   }
+
+  async setDigitalChannel(channel: string) {
+    throwIfNotOK(
+      await this.sendCommand(`CHANNEL_SETTING_ATSC_DTV ${channel} antennanotphy`)
+    );
+  }
 }
